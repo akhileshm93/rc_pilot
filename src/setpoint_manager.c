@@ -116,7 +116,7 @@ int setpoint_manager_update(void)
 
 	// shutdown feedback on kill switch
 	if(user_input.requested_arm_mode == DISARMED){
-		if(fstate.arm_state==ARMED) feedback_disarm();
+		if(fstate.arm_state!=DISARMED) feedback_disarm();
 		return 0;
 	}
 
