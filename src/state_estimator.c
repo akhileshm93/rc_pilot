@@ -41,18 +41,19 @@ static void __batt_init(void)
 {
 	// init the battery low pass filter
 	rc_filter_moving_average(&batt_lp, 20, DT);
-	double tmp = rc_adc_dc_jack();
-	if(tmp<3.0){
-		tmp = settings.v_nominal;
-		if(settings.warnings_en){
-			fprintf(stderr, "WARNING: ADC read %0.1fV on the barrel jack. Please connect\n");
+	double dc_read = rc_adc_dc_jack();
+	if (dc_read < 3.0){
+		if (settings.warnings_en) {
+			fprintf(stderr, "WARNING: ADC read %0.1fV on the barrel jack. Please connect\n", dc_read);
 			fprintf(stderr, "battery to barrel jack, assuming nominal voltage for now.\n");
 		}
+		dc_read = settings.v_nominal;
 	}
-	rc_filter_prefill_inputs(&batt_lp, tmp);
-	rc_filter_prefill_outputs(&batt_lp, tmp);
+	rc_filter_prefill_inputs(&batt_lp, dc_read);
+	rc_filter_prefill_outputs(&batt_lp, dc_read);
 	return;
 }
+
 
 
 static void __batt_march(void)
@@ -161,12 +162,12 @@ static void __mag_march(void)
 static int __altitude_init(void)
 {
 	//initialize altitude kalman filter and bmp sensor
-    rc_matrix_t F = RC_MATRIX_INITIALIZER;
-    rc_matrix_t G = RC_MATRIX_INITIALIZER;
-    rc_matrix_t H = RC_MATRIX_INITIALIZER;
-    rc_matrix_t Q = RC_MATRIX_INITIALIZER;
-    rc_matrix_t R = RC_MATRIX_INITIALIZER;
-    rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+	rc_matrix_t F = RC_MATRIX_INITIALIZER;
+	rc_matrix_t G = RC_MATRIX_INITIALIZER;
+	rc_matrix_t H = RC_MATRIX_INITIALIZER;
+	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
+	rc_matrix_t R = RC_MATRIX_INITIALIZER;
+	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
 
 	const int Nx = 3;
 	const int Ny = 1;
@@ -254,8 +255,8 @@ static void __altitude_march(void)
 
 	// do first-run filter setup
 	if(alt_kf.step==0){
-        rc_vector_zeros(&u, 1);
-        rc_vector_zeros(&y, 1);
+		rc_vector_zeros(&u, 1);
+		rc_vector_zeros(&y, 1);
 		alt_kf.x_est.d[0] = -bmp_data.alt_m;
 		rc_filter_prefill_inputs(&acc_lp, accel_vec[2]+GRAVITY);
 		rc_filter_prefill_outputs(&acc_lp, accel_vec[2]+GRAVITY);

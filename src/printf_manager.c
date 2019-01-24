@@ -119,8 +119,13 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 
 		printf("\r");
 		if(settings.printf_arm){
-			if(fstate.arm_state==ARMED) printf("%s ARMED %s |",KRED,KNRM);
-			else			    printf("%sDISARMED%s|",KGRN,KNRM);
+			if(fstate.arm_state==ARMED) {
+				printf("%s ARMED %s |", KRED, KNRM);
+			} else if (fstate.arm_state == MID_ARMING) {
+				printf("%sSTARTING%s|", KWHT, KNRM);
+			} else {
+				printf("%sDISARMED%s|", KGRN, KNRM);
+			}
 		}
 		__reset_colour();
 		if(settings.printf_altitude){
@@ -137,9 +142,11 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 							state_estimate.continuous_yaw);
 		}
 		if(settings.printf_sticks){
-			if(user_input.requested_arm_mode==ARMED)
+			if(user_input.arm_switch==ARMED) {
 				printf("%s ARMED  ",KRED);
-			else	printf("%sDISARMED",KGRN);
+			} else {
+				printf("%sDISARMED",KGRN);
+			}
 			printf(KGRN);
 			printf("%s|%+5.2f|%+5.2f|%+5.2f|%+5.2f|",\
 							__next_colour(),\
