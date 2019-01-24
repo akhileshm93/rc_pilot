@@ -13,6 +13,7 @@
  */
 typedef enum arm_state_t{
 	DISARMED,
+	MID_ARMING,
 	ARMED
 } arm_state_t;
 
