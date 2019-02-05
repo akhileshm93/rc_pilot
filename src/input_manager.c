@@ -261,7 +261,7 @@ void* input_manager(void* ptr)
 	// logic to handle other inputs such as mavlink/bluetooth/wifi
 	while(rc_get_state()!=EXITING){
 		// if the core got disarmed, wait for arming sequence
-		if(user_input.requested_arm_mode == DISARMED){
+		if(user_input.requested_arm_mode != ARMED){
 			__wait_for_arming_sequence();
 			// user may have pressed the pause button or shut down while waiting
 			// check before continuing
