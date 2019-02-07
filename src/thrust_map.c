@@ -76,6 +76,32 @@ static double f20_2300kv_2s_map[][2] = \
  {0.95,	168.4321}, \
  {1.00,	177.1643}};
 
+// tiger motor F20 2300kv motor, 3S lipo, 4x8.0" 2-blade props
+// 20A esc med-low timing
+// thrust units in gram-force but doesn't really matter
+static const int tiger_3s_points = 20;
+static double tiger_3s_map[][2] = \
+{{0.00,	0.0000}, \
+ {0.1,	0.0000}, \
+ {0.15,	0.0716}, \
+ {0.20,	0.2110}, \
+ {0.25,	0.3698}, \
+ {0.30,	0.5609}, \
+ {0.35,	0.7511}, \
+ {0.40,	0.9593}, \
+ {0.45,	1.1546}, \
+ {0.50,	1.4650}, \
+ {0.55,	1.7894}, \
+ {0.60,	2.2145}, \
+ {0.65,	2.6815}, \
+ {0.70, 3.1602}, \
+ {0.75,	3.6464}, \
+ {0.80,	4.1798}, \
+ {0.85,	4.6875}, \
+ {0.90,	5.2117}, \
+ {0.95,	5.2820}, \
+ {1.00,	5.2896}};
+
 
 
 /*
@@ -113,6 +139,10 @@ int thrust_map_init(thrust_map_t map)
 	case MN1806_1400KV_4S:
 		points = mn1806_1400kv_4s_points;
 		data = mn1806_1400kv_4s_map;
+		break;
+	case TIGER_3S:
+		points = tiger_3s_points;
+		data = tiger_3s_map;
 		break;
 	case F20_2300KV_2S:
 		points = f20_2300kv_2s_points;
