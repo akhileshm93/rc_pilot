@@ -129,7 +129,7 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 	}
 
 	if(settings.log_control_u){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
 							e.u_roll,\
 							e.u_pitch,\
 							e.u_yaw,\
