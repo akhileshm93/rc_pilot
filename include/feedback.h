@@ -71,6 +71,10 @@ int feedback_march(void);
  */
 int feedback_disarm(void);
 
+
+// set to mid-arming intermediate state (where motors come on only slightly)
+void feedback_mid_arm();
+
 /**
  * @brief      This is how outside functions should start the flight controller.
  *
@@ -92,4 +96,3 @@ int feedback_cleanup(void);
 
 
 #endif // FEEDBACK_H
-

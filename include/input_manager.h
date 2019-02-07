@@ -11,6 +11,7 @@
 
 #include <flight_mode.h>
 #include <feedback.h> // only for arm_state_t
+#include <stdbool.h>
 
 
 /**
@@ -38,10 +39,11 @@ typedef enum dsm_kill_mode_t{
  * what it is receiving.
  */
 typedef struct user_input_t{
-	int initialized;		///< set to 1 after input_manager_init(void)
-	flight_mode_t flight_mode;	///< this is the user commanded flight_mode.
-	int input_active;		///< nonzero indicates some user control is coming in
+	int initialized;				///< set to 1 after input_manager_init(void)
+	flight_mode_t flight_mode;		///< this is the user commanded flight_mode.
+	int input_active;				///< nonzero indicates some user control is coming in
 	arm_state_t requested_arm_mode;	///< set to ARMED after arming sequence is entered.
+	arm_state_t arm_switch; 		///< actual position of the physical switch
 
 	// All sticks scaled from -1 to 1
 	double thr_stick;		///< positive forward

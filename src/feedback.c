@@ -104,6 +104,10 @@ int feedback_disarm(void)
 	return 0;
 }
 
+void feedback_mid_arm()
+{
+	fstate.arm_state = MID_ARMING;
+}
 
 int feedback_arm(void)
 {

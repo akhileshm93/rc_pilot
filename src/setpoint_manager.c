@@ -116,7 +116,7 @@ int setpoint_manager_update(void)
 
 	// shutdown feedback on kill switch
 	if(user_input.requested_arm_mode == DISARMED){
-		if(fstate.arm_state==ARMED) feedback_disarm();
+		if(fstate.arm_state!=DISARMED) feedback_disarm();
 		return 0;
 	}
 
@@ -271,9 +271,13 @@ int setpoint_manager_update(void)
 	} // end switch(user_input.flight_mode)
 
 	// arm feedback when requested
-	if(user_input.requested_arm_mode == ARMED){
-		if(fstate.arm_state==DISARMED) feedback_arm();
+	if(user_input.requested_arm_mode == MID_ARMING){
+		if(fstate.arm_state==DISARMED) feedback_mid_arm();
 	}
+	if(user_input.requested_arm_mode == ARMED){
+		if(fstate.arm_state==MID_ARMING) feedback_arm();
+	}
+
 
 	return 0;
 }
