@@ -200,6 +200,9 @@ static int __parse_thrust_map(void)
 	else if(strcmp(tmp_str, "MN1806_1400KV_4S")==0){
 		settings.thrust_map = MN1806_1400KV_4S;
 	}
+	else if(strcmp(tmp_str, "TIGER_3S")==0){
+		settings.thrust_map = TIGER_3S;
+	}
 	else if(strcmp(tmp_str, "F20_2300KV_2S")==0){
 		settings.thrust_map = F20_2300KV_2S;
 	}
