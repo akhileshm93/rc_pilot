@@ -21,9 +21,25 @@
 #include <state_estimator.h>
 #include <settings.h>
 
+#include "vl53l1x.h"
+#include "px4flow.h"
+#include <robotcontrol.h>
+
 #define TWO_PI (M_PI*2.0)
 
 state_estimate_t state_estimate; // extern variable in state_estimator.h
+
+//optic flow senser data 
+I2C_data px4flow;
+px4flow_frame frame;
+px4flow_integral_frame iframe;
+
+// Lidar data
+VL53L1_Dev_t Device;
+uint8_t addr = VL53L1X_DEFAULT_DEVICE_ADDRESS;
+uint8_t i2cbus = 1;
+int16_t status = 0;
+uint16_t rtn;
 
 // sensor data structs
 rc_mpu_data_t mpu_data;
@@ -36,24 +52,26 @@ static rc_filter_t batt_lp = RC_FILTER_INITIALIZER;
 static rc_kalman_t alt_kf = RC_KALMAN_INITIALIZER;
 static rc_filter_t acc_lp = RC_FILTER_INITIALIZER;
 
+// counter to slow down I2C readings
+int counter = 1;
+int *counter_pt = &counter;
 
 static void __batt_init(void)
 {
 	// init the battery low pass filter
 	rc_filter_moving_average(&batt_lp, 20, DT);
-	double dc_read = rc_adc_dc_jack();
-	if (dc_read < 3.0){
-		if (settings.warnings_en) {
-			fprintf(stderr, "WARNING: ADC read %0.1fV on the barrel jack. Please connect\n", dc_read);
+	double tmp = rc_adc_dc_jack();
+	if(tmp<3.0){
+		tmp = settings.v_nominal;
+		if(settings.warnings_en){
+			fprintf(stderr, "WARNING: ADC read %0.1fV on the barrel jack. Please connect\n");
 			fprintf(stderr, "battery to barrel jack, assuming nominal voltage for now.\n");
 		}
-		dc_read = settings.v_nominal;
 	}
-	rc_filter_prefill_inputs(&batt_lp, dc_read);
-	rc_filter_prefill_outputs(&batt_lp, dc_read);
+	rc_filter_prefill_inputs(&batt_lp, tmp);
+	rc_filter_prefill_outputs(&batt_lp, tmp);
 	return;
 }
-
 
 
 static void __batt_march(void)
@@ -70,7 +88,6 @@ static void __batt_cleanup(void)
 	rc_filter_free(&batt_lp);
 	return;
 }
-
 
 
 static void __imu_march(void)
@@ -160,14 +177,45 @@ static void __mag_march(void)
  * @return     0 on success, -1 on failure
  */
 static int __altitude_init(void)
-{
+{   
+	// initialize Lidar
+	status = VL53L1X_InitDriver(&Device, i2cbus, addr);
+	if(status!=0){
+		printf("ERROR: VL53LX Not Responding\n");
+		return -1;
+	}
+	rc_usleep(1E4);
+	printf("Initializing Lidar...\n");
+	VL53L1X_SensorInit(&Device);
+	rc_usleep(1E4);
+	//VL53L1X_SetDistanceMode(&Device,2);
+	//VL53L1X_SetInterMeasurementInMs(&Device,200);
+	//VL53L1X_SetTimingBudgetInMs(&Device,100);
+
+    //initialize px4flow
+	printf("Initializing Optic Flow Sensor...\n");
+    PX4Flow_Initialize(&px4flow);
+	rc_usleep(1E4);
+
+	VL53L1X_GetDistanceMode(&Device,&rtn);
+	printf("Distance Mode: %d\n", rtn);
+
+	VL53L1X_GetInterMeasurementInMs(&Device,&rtn);
+	printf("Measurement Period: %dms\n", rtn);
+	uint16_t rate = rtn;
+
+	VL53L1X_GetTimingBudgetInMs(&Device,&rtn);
+	printf("Timing Budget: %dms\n", rtn);
+
+	VL53L1X_StartRanging(&Device);
+
 	//initialize altitude kalman filter and bmp sensor
-	rc_matrix_t F = RC_MATRIX_INITIALIZER;
-	rc_matrix_t G = RC_MATRIX_INITIALIZER;
-	rc_matrix_t H = RC_MATRIX_INITIALIZER;
-	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
-	rc_matrix_t R = RC_MATRIX_INITIALIZER;
-	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+   	rc_matrix_t F = RC_MATRIX_INITIALIZER;
+    rc_matrix_t G = RC_MATRIX_INITIALIZER;
+    rc_matrix_t H = RC_MATRIX_INITIALIZER;
+    rc_matrix_t Q = RC_MATRIX_INITIALIZER;
+    rc_matrix_t R = RC_MATRIX_INITIALIZER;
+    rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
 
 	const int Nx = 3;
 	const int Ny = 1;
@@ -201,10 +249,10 @@ static int __altitude_init(void)
 	H.d[0][2] = 0.0;
 
 	// covariance matrices
-	Q.d[0][0] = 0.000000001;
-	Q.d[1][1] = 0.000000001;
+	Q.d[0][0] = 0.0001;
+	Q.d[1][1] = 0.0001;
 	Q.d[2][2] = 0.0001; // don't want bias to change too quickly
-	R.d[0][0] = 1000000.0;
+	R.d[0][0] = 0.01;
 
 	// initial P, cloned from converged P while running
 	Pi.d[0][0] = 1258.69;
@@ -241,11 +289,22 @@ static void __altitude_march(void)
 	double accel_vec[3];
 	static rc_vector_t u = RC_VECTOR_INITIALIZER;
 	static rc_vector_t y = RC_VECTOR_INITIALIZER;
+	uint16_t distance = 0;
+	uint8_t tmp = 0;
 
-	// grab raw data
+	// grab data from Lidar
 	state_estimate.bmp_pressure_raw = bmp_data.pressure_pa;
-	state_estimate.alt_bmp_raw = bmp_data.alt_m;
+	VL53L1X_GetDistance(&Device, &distance);
+	state_estimate.alt_bmp_raw = distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
+	//state_estimate.alt_bmp_raw = bmp_data.alt_m;
 	state_estimate.bmp_temp = bmp_data.temp_c;
+	printf("\n Lidar Distance: %f m  ", distance/1000.0);
+
+
+	PX4Flow_ReadFrame(&px4flow, &frame);
+    printf(" PX4_Distance: %3d \r",frame.ground_distance);
+	fflush(stdout);
+    rc_usleep(1E6*DT);
 
 	// make copy of acceleration reading before rotating
 	for(i=0;i<3;i++) accel_vec[i] = state_estimate.accel[i];
@@ -255,9 +314,9 @@ static void __altitude_march(void)
 
 	// do first-run filter setup
 	if(alt_kf.step==0){
-		rc_vector_zeros(&u, 1);
-		rc_vector_zeros(&y, 1);
-		alt_kf.x_est.d[0] = -bmp_data.alt_m;
+        	rc_vector_zeros(&u, 1);
+        	rc_vector_zeros(&y, 1);  //changed 1 to 2 for combining lidar output
+		alt_kf.x_est.d[0] = -distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
 		rc_filter_prefill_inputs(&acc_lp, accel_vec[2]+GRAVITY);
 		rc_filter_prefill_outputs(&acc_lp, accel_vec[2]+GRAVITY);
 	}
@@ -269,14 +328,14 @@ static void __altitude_march(void)
 	u.d[0] = acc_lp.newest_output;
 
 	// don't bother filtering Barometer, kalman will deal with that
-	y.d[0] = -bmp_data.alt_m;
+	y.d[0] = -distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
 
 	rc_kalman_update_lin(&alt_kf, u, y);
 
 	// altitude estimate
 	state_estimate.alt_bmp		= alt_kf.x_est.d[0];
 	state_estimate.alt_bmp_vel	= alt_kf.x_est.d[1];
-	state_estimate.alt_bmp_accel= alt_kf.x_est.d[2];
+	state_estimate.alt_bmp_accel	= alt_kf.x_est.d[2];
 
 	return;
 }
@@ -336,8 +395,9 @@ int state_estimator_march(void)
 	__batt_march();
 	__imu_march();
 	__mag_march();
-	__altitude_march();
 	__feedback_select();
+	__altitude_march();
+	//__feedback_select();	
 	__mocap_check_timeout();
 	return 0;
 }

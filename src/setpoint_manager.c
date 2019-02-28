@@ -17,7 +17,7 @@
 #include <rc_pilot_defs.h>
 #include <flight_mode.h>
 
-#define XYZ_MAX_ERROR	0.5 ///< meters.
+#define XYZ_MAX_ERROR	0.1 ///< meters.
 
 setpoint_t setpoint; // extern variable in setpoint_manager.h
 
@@ -47,7 +47,27 @@ void __update_Z(void)
 		setpoint.Z_dot = 0.0;
 		return;
 	}
+	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;	
+	setpoint.Z += setpoint.Z_dot*DT;
+	return;
+}
+
+void __update_Z_alt_hold(void)
+{
+	double throttle_change;
+	double scale_factor = 1.0;      
+	// set scaling factor for change from throttle input to height; now (1m /0.7)
+	// make sure setpoint doesn't go too far below current altitude since we
+	// can't sink into the ground
+	//if(setpoint.Z > (state_estimate.Z + XYZ_MAX_ERROR)){
+	//	setpoint.Z = state_estimate.Z + XYZ_MAX_ERROR;
+	//	setpoint.Z_dot = 0.0;
+	//	return;
+	//}
 	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;
+	if(-user_input.thr_stick < 0.01 && -user_input.thr_stick > -0.01){
+		setpoint.Z_dot = 0.0;
+	}
 	setpoint.Z += setpoint.Z_dot*DT;
 	return;
 }
@@ -101,6 +121,8 @@ int setpoint_manager_init(void)
 
 int setpoint_manager_update(void)
 {
+	double tmp_Z_throttle;
+
 	if(setpoint.initialized==0){
 		fprintf(stderr, "ERROR in setpoint_manager_update, not initialized yet\n");
 		return -1;
@@ -183,15 +205,18 @@ int setpoint_manager_update(void)
 		break;
 
 	case ALT_HOLD_4DOF:
-		setpoint.en_6dof	= 0;
-		setpoint.en_rpy_ctrl	= 1;
-		setpoint.en_Z_ctrl	= 1;
-		setpoint.en_XY_vel_ctrl	= 0;
-		setpoint.en_XY_pos_ctrl	= 0;
+		setpoint.en_6dof		= 0;
+		setpoint.en_rpy_ctrl		= 1;
+		setpoint.en_Z_ctrl		= 1;
+		setpoint.en_XY_vel_ctrl		= 0;
+		setpoint.en_XY_pos_ctrl		= 0;
+		//tmp_Z_throttle 		= setpoint.Z_throttle;
+		//setpoint.Z_throttle		= -user_input.thr_stick;
 
-		setpoint.roll		= user_input.roll_stick;
-		setpoint.pitch		= user_input.pitch_stick;
-		__update_Z();
+		setpoint.roll			= user_input.roll_stick;
+		setpoint.pitch			= user_input.pitch_stick;
+
+		__update_Z_alt_hold();
 		__update_yaw();
 		break;
 
