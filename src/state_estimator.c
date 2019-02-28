@@ -24,6 +24,7 @@
 #include "vl53l1x.h"
 #include "px4flow.h"
 #include <robotcontrol.h>
+#include <xbee_packet_t.h>
 
 #define TWO_PI (M_PI*2.0)
 
@@ -346,8 +347,8 @@ static void __feedback_select(void)
 	state_estimate.pitch = state_estimate.tb_imu[1];
 	state_estimate.yaw = state_estimate.tb_imu[2];
 	state_estimate.continuous_yaw = state_estimate.imu_continuous_yaw;
-	state_estimate.X = state_estimate.pos_mocap[0];
-	state_estimate.Y = state_estimate.pos_mocap[1];
+	state_estimate.X = xbeeMsg.x;
+	state_estimate.Y = xbeeMsg.y;
 	state_estimate.Z = state_estimate.alt_bmp;
 }
 
@@ -357,8 +358,6 @@ static void __altitude_cleanup(void)
 	rc_filter_free(&acc_lp);
 	return;
 }
-
-
 
 static void __mocap_check_timeout(void)
 {

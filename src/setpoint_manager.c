@@ -261,7 +261,7 @@ int setpoint_manager_update(void)
 		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
 		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
 		__update_XY_pos();
-		__update_Z();
+		__update_Z_alt_hold();
 		__update_yaw();
 		break;
 
