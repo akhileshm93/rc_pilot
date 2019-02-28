@@ -205,6 +205,7 @@ int setpoint_manager_update(void)
 		break;
 
 	case ALT_HOLD_4DOF:
+<<<<<<< HEAD
 		setpoint.en_6dof		= 0;
 		setpoint.en_rpy_ctrl		= 1;
 		setpoint.en_Z_ctrl		= 1;
@@ -217,6 +218,19 @@ int setpoint_manager_update(void)
 		setpoint.pitch			= user_input.pitch_stick;
 
 		__update_Z_alt_hold();
+=======
+		setpoint.en_6dof	= 0;
+		setpoint.en_rpy_ctrl	= 1;
+		setpoint.en_Z_ctrl	= 1;
+		setpoint.en_XY_vel_ctrl	= 0;
+		setpoint.en_XY_pos_ctrl	= 0;
+		setpoint.Z_dot		= 0;   //added
+		setpoint.Z_throttle	= -user_input.thr_stick;
+
+		setpoint.roll		= user_input.roll_stick;
+		setpoint.pitch		= user_input.pitch_stick;
+		//__update_Z();
+>>>>>>> 7583ca6243b98bfe1d86031e6d87a943f6f25308
 		__update_yaw();
 		break;
 
