@@ -235,18 +235,13 @@ int feedback_march(void)
 		if(last_en_Z_ctrl == 0){
 			setpoint.Z = state_estimate.alt_bmp; // set altitude setpoint to current altitude
 			rc_filter_reset(&D_Z);
-<<<<<<< HEAD
 			tmp = 0.01;
-=======
-			tmp = setpoint.Z_throttle / (cos(state_estimate.roll)*cos(state_estimate.pitch));
->>>>>>> 7583ca6243b98bfe1d86031e6d87a943f6f25308
 			rc_filter_prefill_outputs(&D_Z, tmp);
 			last_en_Z_ctrl = 1;
 		}
 		alt_hold_throttle = -0.55;  //Altitude Hold Throttle - Calculate
 		D_Z.gain = D_Z_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 		tmp = rc_filter_march(&D_Z, -setpoint.Z+state_estimate.alt_bmp); //altitude is positive but +Z is down
-<<<<<<< HEAD
 		//rc_saturate_double(&tmp, MIN_THRUST_COMPONENT, MAX_THRUST_COMPONENT);
 		//fd = m_quad*grav + m_quad*tmp;
 		//w_ss = sqrt(fd/(4*ct));
@@ -254,11 +249,6 @@ int feedback_march(void)
 		//u_in = -0.05 - (sigma - 1194.0)*(0.75-0.05)/(1669.0 - 1194.0);
 		//printf("\r %f | %f | %f | %f | %f | %f\n", -setpoint.Z, state_estimate.alt_bmp, -setpoint.Z+state_estimate.alt_bmp,sigma,fd,u_in);
 		u[VEC_Z] = alt_hold_throttle + (-tmp / (cos(state_estimate.roll)*cos(state_estimate.pitch)));   //u_in; changed Added Parathesis
-=======
-		//printf("%f | %f | %f | %f\n", tmp, -setpoint.Z, state_estimate.alt_bmp, -setpoint.Z+state_estimate.alt_bmp);
-		//rc_saturate_double(&tmp, MIN_THRUST_COMPONENT, MAX_THRUST_COMPONENT);
-		u[VEC_Z] = setpoint.Z_throttle - (tmp / cos(state_estimate.roll)*cos(state_estimate.pitch));   //changed
->>>>>>> 7583ca6243b98bfe1d86031e6d87a943f6f25308
 		rc_saturate_double(&u[VEC_Z], MIN_THRUST_COMPONENT, MAX_THRUST_COMPONENT);
 		mix_add_input(u[VEC_Z], VEC_Z, mot);
 		last_en_Z_ctrl = 1;

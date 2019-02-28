@@ -54,16 +54,6 @@ void __update_Z(void)
 
 void __update_Z_alt_hold(void)
 {
-	double throttle_change;
-	double scale_factor = 1.0;      
-	// set scaling factor for change from throttle input to height; now (1m /0.7)
-	// make sure setpoint doesn't go too far below current altitude since we
-	// can't sink into the ground
-	//if(setpoint.Z > (state_estimate.Z + XYZ_MAX_ERROR)){
-	//	setpoint.Z = state_estimate.Z + XYZ_MAX_ERROR;
-	//	setpoint.Z_dot = 0.0;
-	//	return;
-	//}
 	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;
 	if(-user_input.thr_stick < 0.01 && -user_input.thr_stick > -0.01){
 		setpoint.Z_dot = 0.0;
@@ -205,7 +195,6 @@ int setpoint_manager_update(void)
 		break;
 
 	case ALT_HOLD_4DOF:
-<<<<<<< HEAD
 		setpoint.en_6dof		= 0;
 		setpoint.en_rpy_ctrl		= 1;
 		setpoint.en_Z_ctrl		= 1;
@@ -218,19 +207,6 @@ int setpoint_manager_update(void)
 		setpoint.pitch			= user_input.pitch_stick;
 
 		__update_Z_alt_hold();
-=======
-		setpoint.en_6dof	= 0;
-		setpoint.en_rpy_ctrl	= 1;
-		setpoint.en_Z_ctrl	= 1;
-		setpoint.en_XY_vel_ctrl	= 0;
-		setpoint.en_XY_pos_ctrl	= 0;
-		setpoint.Z_dot		= 0;   //added
-		setpoint.Z_throttle	= -user_input.thr_stick;
-
-		setpoint.roll		= user_input.roll_stick;
-		setpoint.pitch		= user_input.pitch_stick;
-		//__update_Z();
->>>>>>> 7583ca6243b98bfe1d86031e6d87a943f6f25308
 		__update_yaw();
 		break;
 
