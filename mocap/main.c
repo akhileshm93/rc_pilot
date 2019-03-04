@@ -273,8 +273,8 @@ int main(int argc, char *argv[])
 	// start the IMU
 	rc_mpu_config_t mpu_conf = rc_mpu_default_config();
 	mpu_conf.i2c_bus = I2C_BUS;
-    	mpu_conf.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
-    	mpu_conf.gpio_interrupt_pin = GPIO_INT_PIN_PIN;
+    mpu_conf.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
+    mpu_conf.gpio_interrupt_pin = GPIO_INT_PIN_PIN;
 	mpu_conf.dmp_sample_rate = FEEDBACK_HZ;
 	mpu_conf.dmp_fetch_accel_gyro = 1;
 	//mpu_conf.orient = ORIENTATION_Z_UP;
