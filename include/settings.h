@@ -79,7 +79,10 @@ typedef struct settings_t{
 	int printf_motors;
 	int printf_mode;
 	int printf_xbee; 
+<<<<<<< HEAD
 	int printf_PX4;
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	///@}
 
 	/** @name log settings */
@@ -90,8 +93,11 @@ typedef struct settings_t{
 	int log_setpoint;
 	int log_control_u;
 	int log_motor_signals;
+<<<<<<< HEAD
 	int log_xbee;
 	int log_px4;
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	///@}
 
 	/** @name mavlink stuff */

@@ -13,8 +13,12 @@
 
 #include <stdint.h> // for uint64_t
 #include <rc_pilot_defs.h>
+<<<<<<< HEAD
 #include <rc/mpu.h>
 #include "px4flow.h"
+=======
+ #include <rc/mpu.h>
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 /**
  * This is the output from the state estimator. It contains raw sensor values
@@ -104,6 +108,7 @@ typedef struct state_estimate_t{
 	double quat_mocap[4];	///< UAV orientation according to mocap
 	double tb_mocap[3];	///< Tait-Bryan angles according to mocap
 	int is_active;  ///< TODO used by mavlink manager, purpose unclear... (pg)
+<<<<<<< HEAD
 
 	/** @name Optical flow camera data 
 	 *  Readings from PX4Flow camera 
@@ -129,6 +134,8 @@ typedef struct state_estimate_t{
 	double PX4_Ty;
 	double PX4_ground_distance;
 
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	///@}
 
 	/** @name Global Position Estimate
@@ -202,12 +209,16 @@ int state_estimator_jobs_after_feedback(void);
  */
 int state_estimator_cleanup(void);
 
+<<<<<<< HEAD
 /**
  * @brief      calculate V_x and V_y based on PX4flow readings
  *
  * @return     void function
  */
 void PX4_velocity_calculation(state_estimate_t *state_estimate);
+=======
+
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 
 #endif //  STATE_ESTIMATOR_H

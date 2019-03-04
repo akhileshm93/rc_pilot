@@ -11,8 +11,11 @@
 #include <dirent.h>
 #include <string.h>
 
+<<<<<<< HEAD
 #include "xbee_packet_t.h"
 
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 // to allow printf macros for multi-architecture portability
 #define __STDC_FORMAT_MACROS
@@ -68,6 +71,7 @@ static int __write_header(FILE* fd)
 
 	if(settings.log_control_u){
 		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z");
+<<<<<<< HEAD
 	}
 
 	if(settings.log_motor_signals && settings.num_rotors==8){
@@ -90,6 +94,20 @@ static int __write_header(FILE* fd)
 		fprintf(fd, ",PX4_m_x,m_y,pix_x,pix_y,gyro_x,gyro_y,gyro_z,x_int,y_int,gyro_x_int,gyro_y_int,gyro_z_int,qual");
 	}
 
+=======
+	}
+
+	if(settings.log_motor_signals && settings.num_rotors==8){
+		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4,mot_5,mot_6,mot_7,mot_8");
+	}
+	if(settings.log_motor_signals && settings.num_rotors==6){
+		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4,mot_5,mot_6");
+	}
+	if(settings.log_motor_signals && settings.num_rotors==4){
+		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4");
+	}
+
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	fprintf(fd, "\n");
 	return 0;
 
@@ -168,14 +186,20 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							e.mot_5,\
 							e.mot_6);
 	}
+<<<<<<< HEAD
 
 	if(settings.log_motor_signals && settings.num_rotors==4){
 		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F",	e.mot_1,\
+=======
+	if(settings.log_motor_signals && settings.num_rotors==4){
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F",		e.mot_1,\
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 							e.mot_2,\
 							e.mot_3,\
 							e.mot_4);
 	}
 
+<<<<<<< HEAD
 	// add log: mocap data
 	if(settings.log_xbee){
 		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",		
@@ -206,6 +230,8 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							state_estimate.PX4_qual);
 	}
 
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	fprintf(fd, "\n");
 	return 0;
 }
@@ -358,7 +384,10 @@ static log_entry_t __construct_new_entry()
 	l.mot_7		= fstate.m[6];
 	l.mot_8		= fstate.m[7];
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	return l;
 }
 

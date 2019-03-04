@@ -614,7 +614,10 @@ int settings_load_from_file(char* path)
 	PARSE_BOOL(printf_motors)
 	PARSE_BOOL(printf_mode)
 	PARSE_BOOL(printf_xbee)
+<<<<<<< HEAD
 	PARSE_BOOL(printf_PX4)
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 	// LOGGING
 	PARSE_BOOL(enable_logging)
@@ -623,8 +626,11 @@ int settings_load_from_file(char* path)
 	PARSE_BOOL(log_setpoint)
 	PARSE_BOOL(log_control_u)
 	PARSE_BOOL(log_motor_signals)
+<<<<<<< HEAD
 	PARSE_BOOL(log_xbee)
 	PARSE_BOOL(log_px4)
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 	// MAVLINK
 	PARSE_STRING(dest_ip)

@@ -38,8 +38,12 @@
 	"printf_u": true,
 	"printf_motors": false,
 	"printf_mode": true,
+<<<<<<< HEAD
 	"printf_xbee": true,
 	"printf_PX4":false,
+=======
+	"printf_xbee": false,
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 	"enable_logging": true,
 	"log_sensors": true,
@@ -47,8 +51,11 @@
 	"log_setpoint": true,
 	"log_control_u": true,
 	"log_motor_signals": true,
+<<<<<<< HEAD
 	"log_xbee": true,
 	"log_px4":true,
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 	"dest_ip": "192.168.8.1",
 	"my_sys_id": 1,
@@ -121,7 +128,11 @@
 		"kp":0.15,
 		"ki":0.0,
 		"kd":0.15,
+<<<<<<< HEAD
 		"crossover_freq_rad_per_sec": 32.1,
+=======
+		"crossover_freq_rad_per_sec": 6.283,
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 		"numerator": [
 			0.1,
 			0.2,
@@ -138,9 +149,15 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.5,
 		"ki":0.0,
 		"kd":0.1,
+=======
+		"kp":0.85,
+		"ki":0.0,
+		"kd":0.0,
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 		"crossover_freq_rad_per_sec": 6.283,
 		"numerator": [
 			0.1,
@@ -178,9 +195,15 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":5.0,
 		"ki":0.0,
 		"kd":2.5,
+=======
+		"kp":0.25,
+		"ki":0.0,
+		"kd":0.0,
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 		"crossover_freq_rad_per_sec": 6.283,
 		"numerator": [
 			0.1,

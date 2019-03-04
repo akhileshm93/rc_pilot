@@ -1,7 +1,10 @@
 // XBee Packet
+<<<<<<< HEAD
 #include <stdint.h>
 #include <stdbool.h>
 
+=======
+>>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 typedef struct xbee_packet_t
 {
     uint32_t time;   ///< Unique id for the rigid body being described
