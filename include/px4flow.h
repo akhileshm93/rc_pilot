@@ -53,16 +53,9 @@ typedef struct I2C_data
   int             fd;              // I2C file descriptor
 } I2C_data;
 
-<<<<<<< HEAD
 extern px4flow_frame PX4Msg;
 
 // functions
 int PX4Flow_Initialize(I2C_data *px4flow);
 int PX4Flow_ReadFrame(I2C_data *px4flow, px4flow_frame *frame);
 int PX4Flow_ReadIntFrame(I2C_data *px4flow, px4flow_integral_frame *iframe);
-=======
-// functions
-int PX4Flow_Initialize(I2C_data *px4flow);
-int PX4Flow_ReadFrame(I2C_data *px4flow, px4flow_frame *frame);
-int PX4Flow_ReadIntFrame(I2C_data *px4flow, px4flow_integral_frame *iframe);
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254

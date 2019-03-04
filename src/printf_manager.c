@@ -71,11 +71,7 @@ static int __print_header()
 		printf("%s  kill  | thr |roll |pitch| yaw |", __next_colour());
 	}
 	if(settings.printf_setpoint){
-<<<<<<< HEAD
 		printf("%s  sp_x | sp_y | sp_a | sp_r | sp_p | sp_y |", __next_colour());
-=======
-		printf("%s  sp_a | sp_r| sp_p| sp_y|", __next_colour());
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	}
 	if(settings.printf_u){
 		printf("%s U0X | U1Y | U2Z | U3r | U4p | U5y |", __next_colour());
@@ -165,15 +161,10 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 							user_input.yaw_stick);
 		}
 		if(settings.printf_setpoint){
-<<<<<<< HEAD
 			printf("%s%+5.2f|%+5.2f|%+5.2f|%+5.2f|%+5.2f|%+5.2f|",\
 							__next_colour(),\
 							setpoint.X,\
 							setpoint.Y,\
-=======
-			printf("%s%+5.2f|%+5.2f|%+5.2f|%+5.2f|",\
-							__next_colour(),\
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 							setpoint.Z,\
 							setpoint.roll,\
 							setpoint.pitch,\
@@ -270,12 +261,9 @@ int print_flight_mode(flight_mode_t mode){
 	case ALT_HOLD_6DOF:
 		printf("%sALT_HOLD_6DOF  %s",KBLU,KNRM);
 		return 0;
-<<<<<<< HEAD
 	case POSITION_CONTROL_4DOF:
 		printf("%sPOSITION_CONTROL_4DOF  %s",KBLU,KNRM);
 		return 0;
-=======
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	default:
 		fprintf(stderr,"ERROR in print_flight_mode, unknown flight mode\n");
 		return -1;

@@ -22,11 +22,7 @@
 #include <settings.h>
 
 #include "vl53l1x.h"
-<<<<<<< HEAD
 //#include "px4flow.h"
-=======
-#include "px4flow.h"
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 #include <robotcontrol.h>
 #include <xbee_packet_t.h>
 
@@ -39,14 +35,11 @@ I2C_data px4flow;
 px4flow_frame frame;
 px4flow_integral_frame iframe;
 
-<<<<<<< HEAD
 double px = 0;
 double py = 0;
 double focal_length_px = (16) / (4.0f * 6.0f) * 1000.0f;
 
 
-=======
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 // Lidar data
 VL53L1_Dev_t Device;
 uint8_t addr = VL53L1X_DEFAULT_DEVICE_ADDRESS;
@@ -190,11 +183,7 @@ static void __mag_march(void)
  * @return     0 on success, -1 on failure
  */
 static int __altitude_init(void)
-<<<<<<< HEAD
 {
-=======
-{   
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	// initialize Lidar
 	status = VL53L1X_InitDriver(&Device, i2cbus, addr);
 	if(status!=0){
@@ -209,15 +198,9 @@ static int __altitude_init(void)
 	//VL53L1X_SetInterMeasurementInMs(&Device,200);
 	//VL53L1X_SetTimingBudgetInMs(&Device,100);
 
-<<<<<<< HEAD
-    	//initialize px4flow
-	printf("Initializing Optic Flow Sensor...\n");
-    	PX4Flow_Initialize(&px4flow);
-=======
     //initialize px4flow
 	printf("Initializing Optic Flow Sensor...\n");
     PX4Flow_Initialize(&px4flow);
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	rc_usleep(1E4);
 
 	VL53L1X_GetDistanceMode(&Device,&rtn);
@@ -234,19 +217,11 @@ static int __altitude_init(void)
 
 	//initialize altitude kalman filter and bmp sensor
    	rc_matrix_t F = RC_MATRIX_INITIALIZER;
-<<<<<<< HEAD
-    	rc_matrix_t G = RC_MATRIX_INITIALIZER;
-    	rc_matrix_t H = RC_MATRIX_INITIALIZER;
-    	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
-    	rc_matrix_t R = RC_MATRIX_INITIALIZER;
-    	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
-=======
     rc_matrix_t G = RC_MATRIX_INITIALIZER;
     rc_matrix_t H = RC_MATRIX_INITIALIZER;
     rc_matrix_t Q = RC_MATRIX_INITIALIZER;
     rc_matrix_t R = RC_MATRIX_INITIALIZER;
     rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 	const int Nx = 3;
 	const int Ny = 1;
@@ -280,17 +255,10 @@ static int __altitude_init(void)
 	H.d[0][2] = 0.0;
 
 	// covariance matrices
-<<<<<<< HEAD
 	Q.d[0][0] = 0.3;
 	Q.d[1][1] = 0.3;
 	Q.d[2][2] = 0.3; // don't want bias to change too quickly
 	R.d[0][0] = 0.005;
-=======
-	Q.d[0][0] = 0.0001;
-	Q.d[1][1] = 0.0001;
-	Q.d[2][2] = 0.0001; // don't want bias to change too quickly
-	R.d[0][0] = 0.01;
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 
 	// initial P, cloned from converged P while running
 	Pi.d[0][0] = 1258.69;
@@ -336,7 +304,6 @@ static void __altitude_march(void)
 	state_estimate.alt_bmp_raw = distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
 	//state_estimate.alt_bmp_raw = bmp_data.alt_m;
 	state_estimate.bmp_temp = bmp_data.temp_c;
-<<<<<<< HEAD
 	//printf("\n Lidar Distance: %f m  ", distance/1000.0);
 
 
@@ -361,16 +328,6 @@ static void __altitude_march(void)
 	//printf("\n Lidar distance: %3f | sonar_distance: %3f \r",state_estimate.alt_bmp_raw,iframe.ground_distance);
 	//printf("\n Lidar_distance: %3f | sonar_distance: %3f | Tx: %3f | Ty: %3f | qual: %3d \r",state_estimate.alt_bmp_raw,iframe.ground_distance,state_estimate.PX4_Tx,state_estimate.PX4_Ty,iframe.quality);
 	
-=======
-	printf("\n Lidar Distance: %f m  ", distance/1000.0);
-
-
-	PX4Flow_ReadFrame(&px4flow, &frame);
-    printf(" PX4_Distance: %3d \r",frame.ground_distance);
-	fflush(stdout);
-    rc_usleep(1E6*DT);
-
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	// make copy of acceleration reading before rotating
 	for(i=0;i<3;i++) accel_vec[i] = state_estimate.accel[i];
 
@@ -487,7 +444,6 @@ int state_estimator_cleanup(void)
 	__altitude_cleanup();
 	return 0;
 }
-<<<<<<< HEAD
 
 /*
 void PX4_velocity_calculation(state_estimate_t *state_estimator) {
@@ -548,5 +504,3 @@ void PX4_velocity_calculation(state_estimate_t *state_estimate) {
 
 	
 }
-=======
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254

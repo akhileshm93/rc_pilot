@@ -48,18 +48,13 @@ void __update_Z(void)
 		setpoint.Z_dot = 0.0;
 		return;
 	}
-<<<<<<< HEAD
 	setpoint.Z_dot = -user_input.thr_stick*settings.max_Z_velocity;
-=======
-	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;	
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	setpoint.Z += setpoint.Z_dot*DT;
 	return;
 }
 
 void __update_Z_alt_hold(void)
 {
-<<<<<<< HEAD
 	setpoint.Z_dot = -user_input.thr_stick*settings.max_Z_velocity;
 	if((-user_input.thr_stick < 0.01) && (-user_input.thr_stick > -0.01)){
 		setpoint.Z_dot = 0.0;
@@ -80,75 +75,9 @@ void __update_XY_pos(void)
 	if((user_input.roll_stick < 0.01) && (user_input.roll_stick > -0.01)){
 		setpoint.Y_dot = 0.0;
 	}
-	// make sure setpoint doesn't go too far from state in case touching something
-	//if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
-	//	setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
-	//	setpoint.X_dot = 0.0;
-	//}
-	//else if(setpoint.X < (state_estimate.X - XYZ_MAX_ERROR)){
-	//	setpoint.X = state_estimate.X - XYZ_MAX_ERROR;
-	//	setpoint.X_dot = 0.0;
-	//	return;
-	//}
-	//else{
-	//	setpoint.X += setpoint.X_dot*DT;
-	//}
 
-	//if(setpoint.Y > (state_estimate.Y + XYZ_MAX_ERROR)){
-	//	setpoint.Y = state_estimate.Y + XYZ_MAX_ERROR;
-	//	setpoint.Y_dot = 0.0;
-	//	return;
-	//}
-	//else if(setpoint.Y < (state_estimate.Y - XYZ_MAX_ERROR)){
-	//	setpoint.Y = state_estimate.Y - XYZ_MAX_ERROR;
-	//	setpoint.Y_dot = 0.0;
-	//	return;
-	//}
-	//else{
-	//	setpoint.Y += setpoint.Y_dot*DT;
-	//}
 	setpoint.X += setpoint.X_dot*DT;
 	setpoint.Y += setpoint.Y_dot*DT;
-=======
-	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;
-	if(-user_input.thr_stick < 0.01 && -user_input.thr_stick > -0.01){
-		setpoint.Z_dot = 0.0;
-	}
-	setpoint.Z += setpoint.Z_dot*DT;
-	return;
-}
-
-void __update_XY_pos(void)
-{
-	// make sure setpoint doesn't go too far from state in case touching something
-	if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
-		setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
-		setpoint.X_dot = 0.0;
-	}
-	else if(setpoint.X < (state_estimate.X - XYZ_MAX_ERROR)){
-		setpoint.X = state_estimate.X - XYZ_MAX_ERROR;
-		setpoint.X_dot = 0.0;
-		return;
-	}
-	else{
-		setpoint.X += setpoint.X_dot*DT;
-	}
-
-	if(setpoint.Y > (state_estimate.Y + XYZ_MAX_ERROR)){
-		setpoint.Y = state_estimate.Y + XYZ_MAX_ERROR;
-		setpoint.Y_dot = 0.0;
-		return;
-	}
-	else if(setpoint.Y < (state_estimate.Y - XYZ_MAX_ERROR)){
-		setpoint.Y = state_estimate.Y - XYZ_MAX_ERROR;
-		setpoint.Y_dot = 0.0;
-		return;
-	}
-	else{
-		setpoint.Y += setpoint.Y_dot*DT;
-	}
-
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 	return;
 }
 
@@ -328,12 +257,6 @@ int setpoint_manager_update(void)
 		setpoint.en_Z_ctrl	= 1;
 		setpoint.en_XY_vel_ctrl	= 0;
 		setpoint.en_XY_pos_ctrl	= 1;
-<<<<<<< HEAD
-=======
-
-		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
-		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
->>>>>>> d5e0f49cadca5d1d34446bea86f9bdc801f2d254
 		__update_XY_pos();
 		__update_Z();
 		__update_yaw();
