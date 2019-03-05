@@ -24,6 +24,8 @@
 #include <mix.h>
 #include <thrust_map.h>
 
+#include "xbee_packet_t.h"
+
 #define TWO_PI (M_PI*2.0)
 
 feedback_state_t fstate; // extern variable in feedback.h
@@ -228,7 +230,8 @@ int feedback_march(void)
 	log_entry_t new_log;
 	static int last_en_Z_ctrl = 0;
 	static int last_en_XY_ctrl = 0;
-	double alt_hold_throttle = -0.60;     //Altitude Hover Throttle
+	double alt_hold_throttle;     //Altitude Hover Throttle
+	double yaw, siny_cosp, cosy_cosp;
 
 	// Disarm if rc_state is somehow paused without disarming the controller.
 	// This shouldn't happen if other threads are working properly.
@@ -311,11 +314,15 @@ int feedback_march(void)
 		D_X_4.gain = D_X_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 		D_Y_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 
-		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+state_estimate.X); //altitude is positive but +Z is down
-		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+state_estimate.Y);;
+		siny_cosp = +2.0 * (xbeeMsg.qw * xbeeMsg.qz + xbeeMsg.qx * xbeeMsg.qy);
+		cosy_cosp = +1.0 - 2.0 * (xbeeMsg.qy * xbeeMsg.qy + xbeeMsg.qz * xbeeMsg.qz); 
+		yaw = atan2(siny_cosp, cosy_cosp);
 
-		setpoint.roll = (-1/9.81)*(tmp_r*cos(state_estimate.yaw) - tmp_p*sin(state_estimate.yaw));
-		setpoint.pitch = (-1/9.81)*(-cos(state_estimate.yaw)*tmp_p - sin(state_estimate.yaw)*tmp_r);
+		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x); //altitude is positive but +Z is down
+		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);
+
+		setpoint.roll = (-1/9.81)*(tmp_r*cos(yaw) - tmp_p*sin(yaw));
+		setpoint.pitch = (-1/9.81)*(-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
 
         rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
 		rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
