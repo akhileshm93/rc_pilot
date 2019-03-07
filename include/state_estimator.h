@@ -109,37 +109,21 @@ typedef struct state_estimate_t{
 	 *  Readings from PX4Flow camera 
 	 */
 	///@{	
-<<<<<<< HEAD
 	uint8_t PX4_dt;	
-=======
-	double PX4_dt;	
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 	double PX4_m_x;    //Temporary variable for PX4flow data
 	double PX4_m_y;	   //Temporary variable for PX4flow data
 	double PX4_pix_x;
 	double PX4_pix_y;
-<<<<<<< HEAD
-    	int16_t PX4_qual;
-=======
-    double PX4_qual;
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
+    int16_t PX4_qual;
 	double PX4_gyro_x;
 	double PX4_gyro_y;
 	double PX4_gyro_z;
 
-<<<<<<< HEAD
 	int16_t PX4_pix_x_int;
 	int16_t PX4_pix_y_int;
 	int16_t PX4_gyro_x_int;
 	int16_t PX4_gyro_y_int;
 	int16_t PX4_gyro_z_int;
-=======
-	double PX4_pix_x_int;
-	double PX4_pix_y_int;
-	double PX4_gyro_x_int;
-	double PX4_gyro_y_int;
-	double PX4_gyro_z_int;
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 
 	double PX4_Tx;
 	double PX4_Ty;

@@ -242,6 +242,7 @@ int feedback_march(void)
 	static int last_en_XY_ctrl = 0;
 	double alt_hold_throttle;     //Altitude Hover Throttle
 	double yaw, siny_cosp, cosy_cosp;
+	static double last_X,last_Y; //store previous mocap position to calculate velocity
 
 	// Disarm if rc_state is somehow paused without disarming the controller.
 	// This shouldn't happen if other threads are working properly.
@@ -315,29 +316,53 @@ int feedback_march(void)
 			setpoint.Y = state_estimate.Y; // set Y position setpoint to current position
 			rc_filter_reset(&D_X_4);
 			rc_filter_reset(&D_Y_4);
-			tmp_xy = 0.01;
+			rc_filter_reset(&D_Xdot_4);
+			rc_filter_reset(&D_Ydot_4);
+			tmp_xy = 0.001;
 			rc_filter_prefill_outputs(&D_X_4, tmp_xy);
 			rc_filter_prefill_outputs(&D_Y_4, tmp_xy);
+			rc_filter_prefill_outputs(&D_Xdot_4, tmp_xy);
+			rc_filter_prefill_outputs(&D_Ydot_4, tmp_xy);
 			last_en_XY_ctrl = 1;
+			last_X = state_estimate.X;
+			last_Y = state_estimate.Y;
 		}
 
 		D_X_4.gain = D_X_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 		D_Y_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+		D_Xdot_4.gain = D_X_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+		D_Ydot_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+        
+		//First, calculate velocity setpoint based on current position error
+		vel_x_set = rc_filter_march(&D_X_4, -setpoint.X+state_estimate.X); 
+		vel_y_set = rc_filter_march(&D_Y_4, -setpoint.Y+state_estimate.Y);
 
+		//saturate velocity setpoints
+		rc_saturate_double(&vel_x, -settings.max_XY_velocity, settings.max_XY_velocity);
+		rc_saturate_double(&vel_y, -settings.max_XY_velocity, settings.max_XY_velocity);
+
+		//calculate current velocity
+		vel_x = (state_estimate.X - last_X)/DT;
+		vel_y = (state_estimate.Y - last_Y)/DT;
+
+		//Calculate current yaw angle
 		siny_cosp = +2.0 * (xbeeMsg.qw * xbeeMsg.qz + xbeeMsg.qx * xbeeMsg.qy);
 		cosy_cosp = +1.0 - 2.0 * (xbeeMsg.qy * xbeeMsg.qy + xbeeMsg.qz * xbeeMsg.qz);
 		yaw = atan2(siny_cosp, cosy_cosp);
 
-		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x); //altitude is positive but +Z is down
-		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);
+		tmp_p = rc_filter_march(&D_Xdot_4, -vel_x_set + vel_x); 
+		tmp_r = rc_filter_march(&D_Ydot_4, -vel_y_set + vel_y);
 
-		setpoint.roll = (-1/9.81)*(tmp_r);   //tmp_r*cos(yaw) - tmp_p*sin(yaw));
-		setpoint.pitch = (-1/9.81)*(-tmp_p);   //-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
+		setpoint.roll = (-1/9.81)*(tmp_r*cos(yaw) - tmp_p*sin(yaw));
+		setpoint.pitch = (-1/9.81)*(-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
 
-        rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
-		rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
+        //rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
+		//rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
 
 		last_en_XY_ctrl = 1;
+		last_X = state_estimate.X;
+		last_Y = state_estimate.Y;
+		
 	}
 
 
