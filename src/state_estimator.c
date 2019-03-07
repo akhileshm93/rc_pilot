@@ -21,9 +21,31 @@
 #include <state_estimator.h>
 #include <settings.h>
 
+#include "vl53l1x.h"
+//#include "px4flow.h"
+#include <robotcontrol.h>
+#include <xbee_packet_t.h>
+
 #define TWO_PI (M_PI*2.0)
 
 state_estimate_t state_estimate; // extern variable in state_estimator.h
+
+//optic flow senser data 
+I2C_data px4flow;
+px4flow_frame frame;
+px4flow_integral_frame iframe;
+
+double px = 0;
+double py = 0;
+double focal_length_px = (16) / (4.0f * 6.0f) * 1000.0f;
+
+
+// Lidar data
+VL53L1_Dev_t Device;
+uint8_t addr = VL53L1X_DEFAULT_DEVICE_ADDRESS;
+uint8_t i2cbus = 1;
+int16_t status = 0;
+uint16_t rtn;
 
 // sensor data structs
 rc_mpu_data_t mpu_data;
@@ -36,24 +58,26 @@ static rc_filter_t batt_lp = RC_FILTER_INITIALIZER;
 static rc_kalman_t alt_kf = RC_KALMAN_INITIALIZER;
 static rc_filter_t acc_lp = RC_FILTER_INITIALIZER;
 
+// counter to slow down I2C readings
+int counter = 1;
+int *counter_pt = &counter;
 
 static void __batt_init(void)
 {
 	// init the battery low pass filter
 	rc_filter_moving_average(&batt_lp, 20, DT);
-	double dc_read = rc_adc_dc_jack();
-	if (dc_read < 3.0){
-		if (settings.warnings_en) {
-			fprintf(stderr, "WARNING: ADC read %0.1fV on the barrel jack. Please connect\n", dc_read);
+	double tmp = rc_adc_dc_jack();
+	if(tmp<3.0){
+		tmp = settings.v_nominal;
+		if(settings.warnings_en){
+			fprintf(stderr, "WARNING: ADC read %0.1fV on the barrel jack. Please connect\n");
 			fprintf(stderr, "battery to barrel jack, assuming nominal voltage for now.\n");
 		}
-		dc_read = settings.v_nominal;
 	}
-	rc_filter_prefill_inputs(&batt_lp, dc_read);
-	rc_filter_prefill_outputs(&batt_lp, dc_read);
+	rc_filter_prefill_inputs(&batt_lp, tmp);
+	rc_filter_prefill_outputs(&batt_lp, tmp);
 	return;
 }
-
 
 
 static void __batt_march(void)
@@ -70,7 +94,6 @@ static void __batt_cleanup(void)
 	rc_filter_free(&batt_lp);
 	return;
 }
-
 
 
 static void __imu_march(void)
@@ -160,14 +183,45 @@ static void __mag_march(void)
  * @return     0 on success, -1 on failure
  */
 static int __altitude_init(void)
-{
+{   
+	// initialize Lidar
+	status = VL53L1X_InitDriver(&Device, i2cbus, addr);
+	if(status!=0){
+		printf("ERROR: VL53LX Not Responding\n");
+		return -1;
+	}
+	rc_usleep(1E4);
+	printf("Initializing Lidar...\n");
+	VL53L1X_SensorInit(&Device);
+	rc_usleep(1E4);
+	//VL53L1X_SetDistanceMode(&Device,2);
+	//VL53L1X_SetInterMeasurementInMs(&Device,200);
+	//VL53L1X_SetTimingBudgetInMs(&Device,100);
+
+    //initialize px4flow
+	printf("Initializing Optic Flow Sensor...\n");
+    PX4Flow_Initialize(&px4flow);
+	rc_usleep(1E4);
+
+	VL53L1X_GetDistanceMode(&Device,&rtn);
+	printf("Distance Mode: %d\n", rtn);
+
+	VL53L1X_GetInterMeasurementInMs(&Device,&rtn);
+	printf("Measurement Period: %dms\n", rtn);
+	uint16_t rate = rtn;
+
+	VL53L1X_GetTimingBudgetInMs(&Device,&rtn);
+	printf("Timing Budget: %dms\n", rtn);
+
+	VL53L1X_StartRanging(&Device);
+
 	//initialize altitude kalman filter and bmp sensor
-	rc_matrix_t F = RC_MATRIX_INITIALIZER;
-	rc_matrix_t G = RC_MATRIX_INITIALIZER;
-	rc_matrix_t H = RC_MATRIX_INITIALIZER;
-	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
-	rc_matrix_t R = RC_MATRIX_INITIALIZER;
-	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+   	rc_matrix_t F = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t G = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t H = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t R = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
 
 	const int Nx = 3;
 	const int Ny = 1;
@@ -201,10 +255,10 @@ static int __altitude_init(void)
 	H.d[0][2] = 0.0;
 
 	// covariance matrices
-	Q.d[0][0] = 0.000000001;
-	Q.d[1][1] = 0.000000001;
+	Q.d[0][0] = 0.0001;
+	Q.d[1][1] = 0.0001;
 	Q.d[2][2] = 0.0001; // don't want bias to change too quickly
-	R.d[0][0] = 1000000.0;
+	R.d[0][0] = 0.01;
 
 	// initial P, cloned from converged P while running
 	Pi.d[0][0] = 1258.69;
@@ -241,12 +295,41 @@ static void __altitude_march(void)
 	double accel_vec[3];
 	static rc_vector_t u = RC_VECTOR_INITIALIZER;
 	static rc_vector_t y = RC_VECTOR_INITIALIZER;
+	uint16_t distance = 0;
+	uint8_t tmp = 0;
 
-	// grab raw data
+	// grab data from Lidar
 	state_estimate.bmp_pressure_raw = bmp_data.pressure_pa;
-	state_estimate.alt_bmp_raw = bmp_data.alt_m;
+	VL53L1X_GetDistance(&Device, &distance);
+	state_estimate.alt_bmp_raw = distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
+	//state_estimate.alt_bmp_raw = bmp_data.alt_m;
 	state_estimate.bmp_temp = bmp_data.temp_c;
+	//printf("\n Lidar Distance: %f m  ", distance/1000.0);
 
+
+	PX4Flow_ReadIntFrame(&px4flow, &iframe);
+	//PX4Flow_ReadIntFrame(&px4flow, &iframe);
+    //printf(" timestamp: %3d \r",frame.sonar_timestamp);
+	//fflush(stdout);
+    //rc_usleep(1E6*DT);
+
+	state_estimate.PX4_pix_x_int = iframe.pixel_flow_x_integral;
+	state_estimate.PX4_pix_y_int = iframe.pixel_flow_y_integral;
+	state_estimate.PX4_gyro_x_int = iframe.gyro_x_rate_integral;
+	state_estimate.PX4_gyro_y_int = iframe.gyro_y_rate_integral;
+	state_estimate.PX4_gyro_z_int = iframe.gyro_z_rate_integral;
+	state_estimate.PX4_ground_distance_int = iframe.ground_distance;
+	state_estimate.PX4_dt_int = iframe.integration_timespan;
+	state_estimate.PX4_quality = iframe.quality;
+	
+	//printf("\n %3d | %3d \r", frame.qual, state_estimate.PX4_qual);
+	PX4_velocity_calculation(&state_estimate);
+
+	
+	//printf("\n Pix_x: %3d | Pix_y: %3d | dt: %3d | wx: %3d | wy: %3d | wz: %3d | Z: %3d | Tx: %3d | Ty: %3d \r",state_estimate.PX4_pix_x,state_estimate.PX4_pix_y,frame.sonar_timestamp,frame.gyro_x_rate,frame.gyro_y_rate,frame.gyro_z_rate,state_estimate.alt_bmp_raw,state_estimate.PX4_Tx,state_estimate.PX4_Ty);
+	//printf("\n Lidar distance: %3f | sonar_distance: %3f \r",state_estimate.alt_bmp_raw,iframe.ground_distance);
+	//printf("\n Lidar_distance: %3f | sonar_distance: %3f | Tx: %3f | Ty: %3f | qual: %3d \r",state_estimate.alt_bmp_raw,iframe.ground_distance,state_estimate.PX4_Tx,state_estimate.PX4_Ty,iframe.quality);
+	
 	// make copy of acceleration reading before rotating
 	for(i=0;i<3;i++) accel_vec[i] = state_estimate.accel[i];
 
@@ -255,9 +338,9 @@ static void __altitude_march(void)
 
 	// do first-run filter setup
 	if(alt_kf.step==0){
-		rc_vector_zeros(&u, 1);
-		rc_vector_zeros(&y, 1);
-		alt_kf.x_est.d[0] = -bmp_data.alt_m;
+        	rc_vector_zeros(&u, 1);
+        	rc_vector_zeros(&y, 1);  //changed 1 to 2 for combining lidar output
+		alt_kf.x_est.d[0] = -distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
 		rc_filter_prefill_inputs(&acc_lp, accel_vec[2]+GRAVITY);
 		rc_filter_prefill_outputs(&acc_lp, accel_vec[2]+GRAVITY);
 	}
@@ -269,14 +352,14 @@ static void __altitude_march(void)
 	u.d[0] = acc_lp.newest_output;
 
 	// don't bother filtering Barometer, kalman will deal with that
-	y.d[0] = -bmp_data.alt_m;
+	y.d[0] = -distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
 
 	rc_kalman_update_lin(&alt_kf, u, y);
 
 	// altitude estimate
 	state_estimate.alt_bmp		= alt_kf.x_est.d[0];
 	state_estimate.alt_bmp_vel	= alt_kf.x_est.d[1];
-	state_estimate.alt_bmp_accel= alt_kf.x_est.d[2];
+	state_estimate.alt_bmp_accel	= alt_kf.x_est.d[2];
 
 	return;
 }
@@ -287,8 +370,8 @@ static void __feedback_select(void)
 	state_estimate.pitch = state_estimate.tb_imu[1];
 	state_estimate.yaw = state_estimate.tb_imu[2];
 	state_estimate.continuous_yaw = state_estimate.imu_continuous_yaw;
-	state_estimate.X = state_estimate.pos_mocap[0];
-	state_estimate.Y = state_estimate.pos_mocap[1];
+	state_estimate.X = xbeeMsg.x;
+	state_estimate.Y = xbeeMsg.y;
 	state_estimate.Z = state_estimate.alt_bmp;
 }
 
@@ -298,8 +381,6 @@ static void __altitude_cleanup(void)
 	rc_filter_free(&acc_lp);
 	return;
 }
-
-
 
 static void __mocap_check_timeout(void)
 {
@@ -336,8 +417,9 @@ int state_estimator_march(void)
 	__batt_march();
 	__imu_march();
 	__mag_march();
-	__altitude_march();
 	__feedback_select();
+	__altitude_march();
+	//__feedback_select();	
 	__mocap_check_timeout();
 	return 0;
 }
@@ -363,4 +445,78 @@ int state_estimator_cleanup(void)
 	__batt_cleanup();
 	__altitude_cleanup();
 	return 0;
+}
+
+/*
+void PX4_velocity_calculation(state_estimate_t *state_estimator) {
+	double Tz = 0;
+	double x =  (state_estimate.PX4_pix_x)/10.0*24*10E-6;   //m
+	double y =  (state_estimate.PX4_pix_y)/10.0*24*10E-6;   //m
+	double wx =  state_estimate.PX4_gyro_x;                 //rad/s
+	double wy =  state_estimate.PX4_gyro_y;                 //rad/s
+	double wz =  state_estimate.PX4_gyro_z;                 //rad/s
+	double Z =  -state_estimate.alt_bmp_raw;                 //m
+	double dt = state_estimate.PX4_dt*10E-3;				 //sec
+	double f = 16/1000.0;                                    //mag
+
+
+	double Tx,Ty;
+
+	state_estimate.PX4_Tx = -(x/dt + wy*f - wz*y)*Z/f;     // m/s TODO:check sign 
+	state_estimate.PX4_Ty = -(y/dt - wx*f + wz*x)*Z/f;     // m/s TODO:chekc sign
+
+
+
+}
+*/
+
+void PX4_velocity_calculation(state_estimate_t *state_estimate) {
+	
+	double velocity_x,velocity_y; 
+	double x_rate = state_estimate->PX4_gyro_x_int / 10.0;       // mrad
+    double y_rate = state_estimate->PX4_gyro_y_int / 10.0;       // mrad
+    double flow_x = state_estimate->PX4_pix_x_int / 10.0;      // mrad
+    double flow_y = state_estimate->PX4_pix_y_int/ 10.0;      // mrad  
+    
+	int timespan = state_estimate->PX4_dt_int;             // microseconds
+    int ground_distance = state_estimate->PX4_ground_distance_int;       // mm
+    uint8_t quality = state_estimate->PX4_quality;
+		
+		
+	 if (quality > 100) {
+      // Update flow rate with gyro rate
+      double pixel_x = flow_x + x_rate; // mrad
+      double pixel_y = flow_y + y_rate; // mrad
+      
+      // Scale based on ground distance and compute speed
+      // (flow/1000) * (ground_distance/1000) / (timespan/1000000)
+    
+      
+      
+
+	  velocity_x = pixel_x * ground_distance / timespan;  // m/s
+	  velocity_y = pixel_y * ground_distance / timespan;  // m/s
+      // Integrate velocity to get pose estimate
+      px = px + velocity_x * 100;
+      py = py + velocity_y * 100;
+
+
+	 state_estimate->PX4_Tx = velocity_x;
+	 state_estimate->PX4_Ty = velocity_y;
+	 
+	 
+	/*
+	 printf("\n Lidar_distance: %3f | sonar_distance: %3f | Vx: %5f | Vy: %5f | qual: %3d | dt: %3d \r",
+	 			state_estimate->alt_bmp_raw,\
+				state_estimate->PX4_ground_distance_int,\
+				state_estimate->PX4_pix_x_int,\
+				state_estimate->PX4_pix_y_int,\
+				state_estimate->PX4_quality,\
+				state_estimate->PX4_dt_int);
+
+	 */
+	 
+	 }
+
+	
 }
