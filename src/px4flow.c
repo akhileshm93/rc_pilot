@@ -96,11 +96,7 @@ int PX4Flow_ReadIntFrame(I2C_data *px4flow, px4flow_integral_frame *iframe){
 		return -1;
 	}
 
-<<<<<<< HEAD
     write(fd, &reg, 1);
-=======
-    write(fd, &reg, 2);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
     int16_t ret = read(fd, buffer, 26);
 	
     if (ret != 26)
@@ -128,7 +124,6 @@ int PX4Flow_ReadIntFrame(I2C_data *px4flow, px4flow_integral_frame *iframe){
 
 }
 
-<<<<<<< HEAD
 int PX4Flow_ReadAllFrames(I2C_data *px4flow, px4flow_frame *frame, px4flow_integral_frame *iframe){
 
     //send 0x0 to PX4FLOW module and receive back 48 Bytes data 
@@ -193,5 +188,3 @@ int PX4Flow_ReadAllFrames(I2C_data *px4flow, px4flow_frame *frame, px4flow_integ
     return 0;
 }
 
-=======
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3

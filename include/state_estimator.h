@@ -110,19 +110,13 @@ typedef struct state_estimate_t{
 	 */
 	///@{	
 	uint8_t PX4_dt;	
-<<<<<<< HEAD
 	uint32_t PX4_dt_int;
-=======
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	double PX4_m_x;    //Temporary variable for PX4flow data
 	double PX4_m_y;	   //Temporary variable for PX4flow data
 	double PX4_pix_x;
 	double PX4_pix_y;
     int16_t PX4_qual;
-<<<<<<< HEAD
 	uint8_t PX4_quality;
-=======
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	double PX4_gyro_x;
 	double PX4_gyro_y;
 	double PX4_gyro_z;
@@ -135,12 +129,8 @@ typedef struct state_estimate_t{
 
 	double PX4_Tx;
 	double PX4_Ty;
-<<<<<<< HEAD
 	int16_t PX4_ground_distance_int;
 	
-=======
-	double PX4_ground_distance;
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	///@}
 

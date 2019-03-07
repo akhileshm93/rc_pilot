@@ -203,7 +203,6 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 			}
 		}
 		if(settings.printf_PX4){
-<<<<<<< HEAD
 			printf("%s%+5.2d |%+5.2d |%+5.2d | %+5.2d | %+5.2d | %+5.2d | %5d |",\
 							__next_colour(),\
 							state_estimate.PX4_pix_x_int,\
@@ -213,17 +212,6 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 							state_estimate.PX4_gyro_z_int,\
 							state_estimate.PX4_ground_distance_int,\
 							state_estimate.PX4_quality);
-=======
-			printf("%s%+5.2f |%+5.2f |%+5.2f | %+5.2f | %+5.2f | %+5.2f | %5d |",\
-							__next_colour(),\
-							state_estimate.PX4_m_x,\
-							state_estimate.PX4_m_y,\
-							state_estimate.PX4_gyro_x,\
-							state_estimate.PX4_gyro_y,\
-							state_estimate.PX4_gyro_z,\
-							state_estimate.PX4_ground_distance,\
-							state_estimate.PX4_qual);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 		}	
 
 		printf(KNRM);

@@ -31,11 +31,7 @@
 feedback_state_t fstate; // extern variable in feedback.h
 
 // keep original controller gains for scaling later
-<<<<<<< HEAD
 static double D_roll_gain_orig, D_pitch_gain_orig, D_yaw_gain_orig, D_X_4_gain_orig, D_Y_4_gain_orig, D_Z_gain_orig;
-=======
-static double D_roll_gain_orig, D_pitch_gain_orig, D_yaw_gain_orig, D_X_4_gain_orig, D_Y_4_gain_orig, D_Xdot_4_gain_orig, D_Ydot_4_gain_orig, D_Z_gain_orig;
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 
 // filters
@@ -104,46 +100,23 @@ static void __pxy4_init(void)
 {
 	// get controllers from settings
 	rc_filter_duplicate(&D_X_4,	settings.horiz_pos_ctrl_4dof);
-<<<<<<< HEAD
 	rc_filter_duplicate(&D_Y_4,	settings.horiz_pos_ctrl_4dof);
-=======
-	rc_filter_duplicate(&D_Xdot_4,	settings.horiz_vel_ctrl_4dof);
-	rc_filter_duplicate(&D_Y_4,	settings.horiz_pos_ctrl_4dof);
-	rc_filter_duplicate(&D_Ydot_4,	settings.horiz_vel_ctrl_4dof);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	#ifdef DEBUG
 	printf("X POS CONTROLLER:\n");
 	rc_filter_print(D_X_4);
-<<<<<<< HEAD
 	printf("Y POS CONTROLLER:\n");
 	rc_filter_print(D_Y_4);
-=======
-	rc_filter_print(D_Xdot_4);
-	printf("Y POS CONTROLLER:\n");
-	rc_filter_print(D_Y_4);
-	rc_filter_print(D_Ydot_4);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	#endif
 
 	// save original gains as we will scale these by battery voltage later
 	D_X_4_gain_orig = D_X_4.gain;
 	D_Y_4_gain_orig = D_Y_4.gain;
-<<<<<<< HEAD
-=======
-	D_Xdot_4_gain_orig = D_Xdot_4.gain;
-	D_Ydot_4_gain_orig = D_Ydot_4.gain;
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	// enable saturation. these limits will be changed late but we need to
 	// enable now so that soft start can also be enabled
 	rc_filter_enable_saturation(&D_X_4, -MAX_X_COMPONENT, MAX_X_COMPONENT);
 	rc_filter_enable_saturation(&D_Y_4, -MAX_Y_COMPONENT, MAX_Y_COMPONENT);
-<<<<<<< HEAD
-=======
-	rc_filter_enable_saturation(&D_Xdot_4, -settings.max_XY_velocity, settings.max_XY_velocity);
-	rc_filter_enable_saturation(&D_Ydot_4, -settings.max_XY_velocity, settings.max_XY_velocity);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	// enable soft start
 	rc_filter_enable_soft_start(&D_X_4, SOFT_START_SECONDS);
@@ -194,11 +167,6 @@ int feedback_arm(void)
 	rc_filter_reset(&D_Z);
 	rc_filter_reset(&D_X_4);
 	rc_filter_reset(&D_Y_4);
-<<<<<<< HEAD
-=======
-	rc_filter_reset(&D_Xdot_4);
-	rc_filter_reset(&D_Ydot_4);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	// prefill filters with current error
 	rc_filter_prefill_inputs(&D_roll, -state_estimate.roll);
@@ -263,11 +231,7 @@ int feedback_march(void)
 	static int last_en_Z_ctrl = 0;
 	static int last_en_XY_ctrl = 0;
 	double alt_hold_throttle;     //Altitude Hover Throttle
-<<<<<<< HEAD
 	double yaw;
-=======
-	double yaw, siny_cosp, cosy_cosp;
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	// Disarm if rc_state is somehow paused without disarming the controller.
 	// This shouldn't happen if other threads are working properly.
@@ -310,20 +274,12 @@ int feedback_march(void)
 			rc_filter_prefill_outputs(&D_Z, tmp_z);
 			last_en_Z_ctrl = 1;
 		}
-<<<<<<< HEAD
 		alt_hold_throttle = -0.56*(11.7/state_estimate.v_batt_lp);
-=======
-		alt_hold_throttle = -0.60*(11.8/state_estimate.v_batt_lp);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
                 D_Z.gain = D_Z_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 		tmp_z = rc_filter_march(&D_Z, -setpoint.Z+state_estimate.alt_bmp); //altitude is positive but +Z is down
 
-<<<<<<< HEAD
 		u[VEC_Z] = (alt_hold_throttle - tmp_z)/(cos(state_estimate.roll)*cos(state_estimate.pitch));
-=======
-		u[VEC_Z] = alt_hold_throttle + (-tmp_z / (cos(state_estimate.roll)*cos(state_estimate.pitch)));   //u_in; changed Added Parathesis
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 		rc_saturate_double(&u[VEC_Z], MIN_THRUST_COMPONENT, MAX_THRUST_COMPONENT);
 		mix_add_input(u[VEC_Z], VEC_Z, mot);
 		last_en_Z_ctrl = 1;
@@ -358,7 +314,6 @@ int feedback_march(void)
 		D_X_4.gain = D_X_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 		D_Y_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 
-<<<<<<< HEAD
 		yaw = state_estimate.tb_imu[2];
 
 		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x);
@@ -367,20 +322,7 @@ int feedback_march(void)
 		setpoint.roll = (-1/9.81)*(tmp_r*cos(yaw) - tmp_p*sin(yaw));
 		setpoint.pitch = (-1/9.81)*(-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
 
-        	rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
-=======
-		siny_cosp = +2.0 * (xbeeMsg.qw * xbeeMsg.qz + xbeeMsg.qx * xbeeMsg.qy);
-		cosy_cosp = +1.0 - 2.0 * (xbeeMsg.qy * xbeeMsg.qy + xbeeMsg.qz * xbeeMsg.qz);
-		yaw = atan2(siny_cosp, cosy_cosp);
-
-		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x); //altitude is positive but +Z is down
-		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);
-
-		setpoint.roll = (-1/9.81)*(tmp_r);   //tmp_r*cos(yaw) - tmp_p*sin(yaw));
-		setpoint.pitch = (-1/9.81)*(-tmp_p);   //-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
-
         rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
->>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 		rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
 
 		last_en_XY_ctrl = 1;
