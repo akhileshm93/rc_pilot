@@ -68,7 +68,6 @@ static int __write_header(FILE* fd)
 
 	if(settings.log_control_u){
 		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z");
-	}
 
 	if(settings.log_motor_signals && settings.num_rotors==8){
 		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4,mot_5,mot_6,mot_7,mot_8");
@@ -87,7 +86,11 @@ static int __write_header(FILE* fd)
 
 	// add log: optic flow sensor data
 	if(settings.log_px4){
+<<<<<<< HEAD
 		fprintf(fd, ",PX4_TX,PX4_Ty,PX4_gyro_x_int,PX4_gyro_y_int,PX4_gyro_z_int,PX4_ground_distance_int,PX4_dt_int,PX4_quality");
+=======
+		fprintf(fd, ",PX4_m_x,PX4_m_y,PX4_gyro_x,PX4_gyro_y,PX4_gyro_z,PX4_ground_distance,PX4_dt,PX4_qual");
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	}
 	
 	fprintf(fd, "\n");
@@ -97,14 +100,12 @@ static int __write_header(FILE* fd)
 }
 
 
-static int __write_log_entry(FILE* fd, log_entry_t e)
-{
-	// always print loop index
-	fprintf(fd, "%" PRIu64 ",%" PRIu64, e.loop_index, e.last_step_ns);
+	// add log: optic flow sensor data
+	if(settings.log_px4){
+		fprintf(fd, ",PX4_m_x,m_y,pix_x,pix_y,gyro_x,gyro_y,gyro_z,x_int,y_int,gyro_x_int,gyro_y_int,gyro_z_int,qual");
+	}
 
-	if(settings.log_sensors){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
-							e.v_batt,\
+	fprintf(fd, "\n");
 							e.alt_bmp_raw,\
 							e.gyro_roll,\
 							e.gyro_pitch,\
@@ -190,6 +191,7 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 	
 	// add log: PX4 data
 	if(settings.log_px4){
+<<<<<<< HEAD
 		fprintf(fd, ",%.4F,%.4F,%.4d,%.4d,%.4d,%.4d,%.4d,%.4d",		
 							state_estimate.PX4_Tx,\
 							state_estimate.PX4_Ty,\
@@ -199,6 +201,17 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							state_estimate.PX4_ground_distance_int,\
 							state_estimate.PX4_dt_int,\
 							state_estimate.PX4_quality);
+=======
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4d,%.4d",		
+							state_estimate.PX4_m_x,\
+							state_estimate.PX4_m_y,\
+							state_estimate.PX4_gyro_x,\
+							state_estimate.PX4_gyro_y,\
+							state_estimate.PX4_gyro_z,\
+							state_estimate.PX4_ground_distance,\
+							state_estimate.PX4_dt,\
+							state_estimate.PX4_qual);
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	}
 
 	fprintf(fd, "\n");

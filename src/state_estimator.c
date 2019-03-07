@@ -183,11 +183,15 @@ static void __mag_march(void)
  * @return     0 on success, -1 on failure
  */
 static int __altitude_init(void)
+<<<<<<< HEAD
 {   
 	// initialize Lidar
 	status = VL53L1X_InitDriver(&Device, i2cbus, addr);
 	if(status!=0){
 		printf("ERROR: VL53LX Not Responding\n");
+=======
+	// initialize Lidar
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 		return -1;
 	}
 	rc_usleep(1E4);
@@ -217,11 +221,19 @@ static int __altitude_init(void)
 
 	//initialize altitude kalman filter and bmp sensor
    	rc_matrix_t F = RC_MATRIX_INITIALIZER;
+<<<<<<< HEAD
     	rc_matrix_t G = RC_MATRIX_INITIALIZER;
     	rc_matrix_t H = RC_MATRIX_INITIALIZER;
     	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
     	rc_matrix_t R = RC_MATRIX_INITIALIZER;
     	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+=======
+    rc_matrix_t G = RC_MATRIX_INITIALIZER;
+    rc_matrix_t H = RC_MATRIX_INITIALIZER;
+    rc_matrix_t Q = RC_MATRIX_INITIALIZER;
+    rc_matrix_t R = RC_MATRIX_INITIALIZER;
+    rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	const int Nx = 3;
 	const int Ny = 1;
@@ -307,12 +319,17 @@ static void __altitude_march(void)
 	//printf("\n Lidar Distance: %f m  ", distance/1000.0);
 
 
+<<<<<<< HEAD
 	PX4Flow_ReadIntFrame(&px4flow, &iframe);
+=======
+	PX4Flow_ReadFrame(&px4flow, &frame);
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	//PX4Flow_ReadIntFrame(&px4flow, &iframe);
     //printf(" timestamp: %3d \r",frame.sonar_timestamp);
 	//fflush(stdout);
     //rc_usleep(1E6*DT);
 
+<<<<<<< HEAD
 	state_estimate.PX4_pix_x_int = iframe.pixel_flow_x_integral;
 	state_estimate.PX4_pix_y_int = iframe.pixel_flow_y_integral;
 	state_estimate.PX4_gyro_x_int = iframe.gyro_x_rate_integral;
@@ -324,6 +341,19 @@ static void __altitude_march(void)
 	
 	//printf("\n %3d | %3d \r", frame.qual, state_estimate.PX4_qual);
 	PX4_velocity_calculation(&state_estimate);
+=======
+	state_estimate.PX4_m_x = frame.flow_comp_m_x;
+	state_estimate.PX4_m_y = frame.flow_comp_m_y;
+	state_estimate.PX4_gyro_x = frame.gyro_x_rate;
+	state_estimate.PX4_gyro_y = frame.gyro_y_rate;
+	state_estimate.PX4_gyro_z = frame.gyro_z_rate;
+	state_estimate.PX4_ground_distance = frame.ground_distance;
+	state_estimate.PX4_dt = frame.sonar_timestamp;
+	state_estimate.PX4_qual = frame.qual;
+	
+	//printf("\n %3d | %3d \r", frame.qual, state_estimate.PX4_qual);
+	//PX4_velocity_calculation(&state_estimate);
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 
 	
 	//printf("\n Pix_x: %3d | Pix_y: %3d | dt: %3d | wx: %3d | wy: %3d | wz: %3d | Z: %3d | Tx: %3d | Ty: %3d \r",state_estimate.PX4_pix_x,state_estimate.PX4_pix_y,frame.sonar_timestamp,frame.gyro_x_rate,frame.gyro_y_rate,frame.gyro_z_rate,state_estimate.alt_bmp_raw,state_estimate.PX4_Tx,state_estimate.PX4_Ty);
@@ -471,16 +501,26 @@ void PX4_velocity_calculation(state_estimate_t *state_estimator) {
 */
 
 void PX4_velocity_calculation(state_estimate_t *state_estimate) {
+<<<<<<< HEAD
 	
+=======
+	/*
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 	double velocity_x,velocity_y; 
 	double x_rate = state_estimate->PX4_gyro_x_int / 10.0;       // mrad
     double y_rate = state_estimate->PX4_gyro_y_int / 10.0;       // mrad
     double flow_x = state_estimate->PX4_pix_x_int / 10.0;      // mrad
     double flow_y = state_estimate->PX4_pix_y_int/ 10.0;      // mrad  
     
+<<<<<<< HEAD
 	int timespan = state_estimate->PX4_dt_int;             // microseconds
     int ground_distance = state_estimate->PX4_ground_distance_int;       // mm
     uint8_t quality = state_estimate->PX4_quality;
+=======
+	int timespan = state_estimate->PX4_dt;             // microseconds
+    double ground_distance = state_estimate->PX4_ground_distance;       // mm
+    int quality = state_estimate->PX4_qual;
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
 		
 		
 	 if (quality > 100) {
@@ -503,6 +543,7 @@ void PX4_velocity_calculation(state_estimate_t *state_estimate) {
 
 	 state_estimate->PX4_Tx = velocity_x;
 	 state_estimate->PX4_Ty = velocity_y;
+<<<<<<< HEAD
 	 
 	 
 	/*
@@ -520,3 +561,20 @@ void PX4_velocity_calculation(state_estimate_t *state_estimate) {
 
 	
 }
+=======
+	 }
+	 */
+
+	 printf("\n Lidar_distance: %3f | sonar_distance: %3f | Vx: %5f | Vy: %5f | qual: %3d | dt: %3d \r",
+	 			state_estimate->alt_bmp_raw,\
+				state_estimate->PX4_ground_distance,\
+				state_estimate->PX4_m_x,\
+				state_estimate->PX4_m_y,\
+				state_estimate->PX4_qual,\
+				state_estimate->PX4_dt);
+
+	 
+
+	
+}
+>>>>>>> 440b64bd7750f358244b630e0963738ff62d3bd3
