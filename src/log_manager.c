@@ -11,6 +11,8 @@
 #include <dirent.h>
 #include <string.h>
 
+#include "xbee_packet_t.h"
+
 
 // to allow printf macros for multi-architecture portability
 #define __STDC_FORMAT_MACROS
@@ -78,6 +80,16 @@ static int __write_header(FILE* fd)
 		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4");
 	}
 
+	// add log: mocap data
+	if(settings.log_xbee){
+		fprintf(fd, ",X,Y,Z,q_X,q_Y,q_Z,q_W");
+	}
+
+	// add log: optic flow sensor data
+	if(settings.log_px4){
+		fprintf(fd, ",PX4_m_x,PX4_m_y,PX4_gyro_x,PX4_gyro_y,PX4_gyro_z,PX4_ground_distance,PX4_dt,PX4_qual");
+	}
+	
 	fprintf(fd, "\n");
 	return 0;
 
@@ -156,11 +168,37 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							e.mot_5,\
 							e.mot_6);
 	}
+
 	if(settings.log_motor_signals && settings.num_rotors==4){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F",		e.mot_1,\
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F",	e.mot_1,\
 							e.mot_2,\
 							e.mot_3,\
 							e.mot_4);
+	}
+
+	// add log: mocap data
+	if(settings.log_xbee){
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",		
+							xbeeMsg.x,\
+							xbeeMsg.y,\
+							xbeeMsg.z,\
+							xbeeMsg.qx,\
+							xbeeMsg.qy,\
+							xbeeMsg.qz,\
+							xbeeMsg.qw);
+	}
+	
+	// add log: PX4 data
+	if(settings.log_px4){
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4d,%.4d",		
+							state_estimate.PX4_m_x,\
+							state_estimate.PX4_m_y,\
+							state_estimate.PX4_gyro_x,\
+							state_estimate.PX4_gyro_y,\
+							state_estimate.PX4_gyro_z,\
+							state_estimate.PX4_ground_distance,\
+							state_estimate.PX4_dt,\
+							state_estimate.PX4_qual);
 	}
 
 	fprintf(fd, "\n");
@@ -314,6 +352,7 @@ static log_entry_t __construct_new_entry()
 	l.mot_6		= fstate.m[5];
 	l.mot_7		= fstate.m[6];
 	l.mot_8		= fstate.m[7];
+
 
 	return l;
 }
