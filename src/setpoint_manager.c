@@ -75,6 +75,7 @@ void __update_XY_pos(void)
 	if((user_input.roll_stick < 0.01) && (user_input.roll_stick > -0.01)){
 		setpoint.Y_dot = 0.0;
 	}
+<<<<<<< HEAD
 	// make sure setpoint doesn't go too far from state in case touching something
 	//if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
 	//	setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
@@ -102,6 +103,9 @@ void __update_XY_pos(void)
 	//else{
 	//	setpoint.Y += setpoint.Y_dot*DT;
 	//}
+=======
+
+>>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 	setpoint.X += setpoint.X_dot*DT;
 	setpoint.Y += setpoint.Y_dot*DT;
 	return;

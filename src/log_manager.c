@@ -68,7 +68,6 @@ static int __write_header(FILE* fd)
 
 	if(settings.log_control_u){
 		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z");
-	}
 
 	if(settings.log_motor_signals && settings.num_rotors==8){
 		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4,mot_5,mot_6,mot_7,mot_8");
@@ -84,6 +83,7 @@ static int __write_header(FILE* fd)
 	if(settings.log_xbee){
 		fprintf(fd, ",X,Y,Z,q_X,q_Y,q_Z,q_W");
 	}
+<<<<<<< HEAD
 
 	// add log: optic flow sensor data
 	if(settings.log_px4){
@@ -96,15 +96,15 @@ static int __write_header(FILE* fd)
 
 }
 
+=======
+>>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 
-static int __write_log_entry(FILE* fd, log_entry_t e)
-{
-	// always print loop index
-	fprintf(fd, "%" PRIu64 ",%" PRIu64, e.loop_index, e.last_step_ns);
+	// add log: optic flow sensor data
+	if(settings.log_px4){
+		fprintf(fd, ",PX4_m_x,m_y,pix_x,pix_y,gyro_x,gyro_y,gyro_z,x_int,y_int,gyro_x_int,gyro_y_int,gyro_z_int,qual");
+	}
 
-	if(settings.log_sensors){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
-							e.v_batt,\
+	fprintf(fd, "\n");
 							e.alt_bmp_raw,\
 							e.gyro_roll,\
 							e.gyro_pitch,\
@@ -190,6 +190,7 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 	
 	// add log: PX4 data
 	if(settings.log_px4){
+<<<<<<< HEAD
 		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4d,%.4d",		
 							state_estimate.PX4_m_x,\
 							state_estimate.PX4_m_y,\
@@ -198,6 +199,21 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							state_estimate.PX4_gyro_z,\
 							state_estimate.PX4_ground_distance,\
 							state_estimate.PX4_dt,\
+=======
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",		
+							state_estimate.PX4_Tx,\
+							state_estimate.PX4_Ty,\
+							state_estimate.PX4_pix_x,\
+							state_estimate.PX4_pix_y,\
+							state_estimate.PX4_gyro_x,\
+							state_estimate.PX4_gyro_y,\
+							state_estimate.PX4_gyro_z,\
+							state_estimate.PX4_pix_x_int,\
+							state_estimate.PX4_pix_y_int,\
+							state_estimate.PX4_gyro_x_int,\
+							state_estimate.PX4_gyro_y_int,\
+							state_estimate.PX4_gyro_z_int,\
+>>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 							state_estimate.PX4_qual);
 	}
 
