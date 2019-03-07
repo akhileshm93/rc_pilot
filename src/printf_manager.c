@@ -85,14 +85,11 @@ static int __print_header()
 	if(settings.printf_xbee){
 		printf("%s x_xb | y_xb | z_xb | qx_xb | qy_xb | qz_xb | qw_xb |", __next_colour());
 	}
-<<<<<<< HEAD
 
 	if(settings.printf_PX4){
 		printf("%s m_x | m_y | w_x | w_y | w_z | Z | quality |", __next_colour());
 	}
 
-=======
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 	printf(KNRM);
 	if(settings.printf_mode){
 		printf("   MODE ");

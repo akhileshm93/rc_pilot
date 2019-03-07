@@ -83,7 +83,6 @@ static int __write_header(FILE* fd)
 	if(settings.log_xbee){
 		fprintf(fd, ",X,Y,Z,q_X,q_Y,q_Z,q_W");
 	}
-<<<<<<< HEAD
 
 	// add log: optic flow sensor data
 	if(settings.log_px4){
@@ -96,8 +95,6 @@ static int __write_header(FILE* fd)
 
 }
 
-=======
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 
 	// add log: optic flow sensor data
 	if(settings.log_px4){
@@ -190,7 +187,6 @@ static int __write_header(FILE* fd)
 	
 	// add log: PX4 data
 	if(settings.log_px4){
-<<<<<<< HEAD
 		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4d,%.4d",		
 							state_estimate.PX4_m_x,\
 							state_estimate.PX4_m_y,\
@@ -199,21 +195,6 @@ static int __write_header(FILE* fd)
 							state_estimate.PX4_gyro_z,\
 							state_estimate.PX4_ground_distance,\
 							state_estimate.PX4_dt,\
-=======
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",		
-							state_estimate.PX4_Tx,\
-							state_estimate.PX4_Ty,\
-							state_estimate.PX4_pix_x,\
-							state_estimate.PX4_pix_y,\
-							state_estimate.PX4_gyro_x,\
-							state_estimate.PX4_gyro_y,\
-							state_estimate.PX4_gyro_z,\
-							state_estimate.PX4_pix_x_int,\
-							state_estimate.PX4_pix_y_int,\
-							state_estimate.PX4_gyro_x_int,\
-							state_estimate.PX4_gyro_y_int,\
-							state_estimate.PX4_gyro_z_int,\
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 							state_estimate.PX4_qual);
 	}
 

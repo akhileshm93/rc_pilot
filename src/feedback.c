@@ -115,13 +115,8 @@ static void __pxy4_init(void)
 
 	// enable saturation. these limits will be changed late but we need to
 	// enable now so that soft start can also be enabled
-<<<<<<< HEAD
 	rc_filter_enable_saturation(&D_X_4, -MAX_X_COMPONENT, MAX_X_COMPONENT);
 	rc_filter_enable_saturation(&D_Y_4, -MAX_Y_COMPONENT, MAX_Y_COMPONENT);
-=======
-	rc_filter_enable_saturation(&D_X_4,	-MAX_X_COMPONENT, MAX_X_COMPONENT);
-	rc_filter_enable_saturation(&D_Y_4,	-MAX_Y_COMPONENT, MAX_Y_COMPONENT);
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 
 	// enable soft start
 	rc_filter_enable_soft_start(&D_X_4, SOFT_START_SECONDS);
@@ -320,27 +315,16 @@ int feedback_march(void)
 		D_Y_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
 
 		siny_cosp = +2.0 * (xbeeMsg.qw * xbeeMsg.qz + xbeeMsg.qx * xbeeMsg.qy);
-<<<<<<< HEAD
 		cosy_cosp = +1.0 - 2.0 * (xbeeMsg.qy * xbeeMsg.qy + xbeeMsg.qz * xbeeMsg.qz);
-=======
-		cosy_cosp = +1.0 - 2.0 * (xbeeMsg.qy * xbeeMsg.qy + xbeeMsg.qz * xbeeMsg.qz); 
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 		yaw = atan2(siny_cosp, cosy_cosp);
 
 		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x); //altitude is positive but +Z is down
 		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);
 
-<<<<<<< HEAD
 		setpoint.roll = (-1/9.81)*(tmp_r);   //tmp_r*cos(yaw) - tmp_p*sin(yaw));
 		setpoint.pitch = (-1/9.81)*(-tmp_p);   //-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
 
-        	rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
-=======
-		setpoint.roll = (-1/9.81)*(tmp_r*cos(yaw) - tmp_p*sin(yaw));
-		setpoint.pitch = (-1/9.81)*(-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
-
         rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
->>>>>>> 33ee57e907332e7491b179680c069d74019a8ed0
 		rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
 
 		last_en_XY_ctrl = 1;
