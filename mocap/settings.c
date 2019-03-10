@@ -200,9 +200,6 @@ static int __parse_thrust_map(void)
 	else if(strcmp(tmp_str, "MN1806_1400KV_4S")==0){
 		settings.thrust_map = MN1806_1400KV_4S;
 	}
-	else if(strcmp(tmp_str, "TIGER_3S")==0){
-		settings.thrust_map = TIGER_3S;
-	}
 	else if(strcmp(tmp_str, "F20_2300KV_2S")==0){
 		settings.thrust_map = F20_2300KV_2S;
 	}
@@ -315,8 +312,8 @@ static int __parse_controller(json_object* jobj_ctl, rc_filter_t* filter)
 	char* tmp_str = NULL;
 	double tmp_flt, tmp_kp, tmp_ki, tmp_kd;
 	int i, num_len, den_len;
-	rc_vector_t num_vec = RC_VECTOR_INITIALIZER;
-	rc_vector_t den_vec = RC_VECTOR_INITIALIZER;
+	rc_vector_t num_vec = rc_vector_empty(); //RC_VECTOR_INITIALIZER;
+	rc_vector_t den_vec = rc_vector_empty() ; //RC_VECTOR_INITIALIZER;
 
 	// destroy old memory in case the order changes
 	rc_filter_free(filter);
@@ -614,7 +611,6 @@ int settings_load_from_file(char* path)
 	PARSE_BOOL(printf_motors)
 	PARSE_BOOL(printf_mode)
 	PARSE_BOOL(printf_xbee)
-	PARSE_BOOL(printf_PX4)
 
 	// LOGGING
 	PARSE_BOOL(enable_logging)
@@ -623,8 +619,6 @@ int settings_load_from_file(char* path)
 	PARSE_BOOL(log_setpoint)
 	PARSE_BOOL(log_control_u)
 	PARSE_BOOL(log_motor_signals)
-	PARSE_BOOL(log_xbee)
-	PARSE_BOOL(log_px4)
 
 	// MAVLINK
 	PARSE_STRING(dest_ip)

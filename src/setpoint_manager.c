@@ -5,6 +5,7 @@
 **/
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 #include <string.h> // for memset
 
 #include <rc/start_stop.h>
@@ -17,7 +18,7 @@
 #include <rc_pilot_defs.h>
 #include <flight_mode.h>
 
-#define XYZ_MAX_ERROR	0.5 ///< meters.
+#define XYZ_MAX_ERROR	0.1 ///< meters.
 
 setpoint_t setpoint; // extern variable in setpoint_manager.h
 
@@ -47,41 +48,62 @@ void __update_Z(void)
 		setpoint.Z_dot = 0.0;
 		return;
 	}
-	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;
+	setpoint.Z_dot = -user_input.thr_stick*settings.max_Z_velocity;
+	setpoint.Z += setpoint.Z_dot*DT;
+	return;
+}
+
+void __update_Z_alt_hold(void)
+{
+	setpoint.Z_dot = -user_input.thr_stick*settings.max_Z_velocity;
+	if((-user_input.thr_stick < 0.01) && (-user_input.thr_stick > -0.01)){
+		setpoint.Z_dot = 0.0;
+	}
 	setpoint.Z += setpoint.Z_dot*DT;
 	return;
 }
 
 void __update_XY_pos(void)
 {
+	setpoint.X_dot = -user_input.pitch_stick*settings.max_XY_velocity;
+	setpoint.Y_dot =  user_input.roll_stick*settings.max_XY_velocity;
+
+	if((-user_input.pitch_stick<0.01) && (-user_input.pitch_stick > -0.01)){
+		setpoint.X_dot = 0.0;
+	}
+
+	if((user_input.roll_stick < 0.01) && (user_input.roll_stick > -0.01)){
+		setpoint.Y_dot = 0.0;
+	}
 	// make sure setpoint doesn't go too far from state in case touching something
-	if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
-		setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
-		setpoint.X_dot = 0.0;
-	}
-	else if(setpoint.X < (state_estimate.X - XYZ_MAX_ERROR)){
-		setpoint.X = state_estimate.X - XYZ_MAX_ERROR;
-		setpoint.X_dot = 0.0;
-		return;
-	}
-	else{
-		setpoint.X += setpoint.X_dot*DT;
-	}
+	//if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
+	//	setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
+	//	setpoint.X_dot = 0.0;
+	//}
+	//else if(setpoint.X < (state_estimate.X - XYZ_MAX_ERROR)){
+	//	setpoint.X = state_estimate.X - XYZ_MAX_ERROR;
+	//	setpoint.X_dot = 0.0;
+	//	return;
+	//}
+	//else{
+	//	setpoint.X += setpoint.X_dot*DT;
+	//}
 
-	if(setpoint.Y > (state_estimate.Y + XYZ_MAX_ERROR)){
-		setpoint.Y = state_estimate.Y + XYZ_MAX_ERROR;
-		setpoint.Y_dot = 0.0;
-		return;
-	}
-	else if(setpoint.Y < (state_estimate.Y - XYZ_MAX_ERROR)){
-		setpoint.Y = state_estimate.Y - XYZ_MAX_ERROR;
-		setpoint.Y_dot = 0.0;
-		return;
-	}
-	else{
-		setpoint.Y += setpoint.Y_dot*DT;
-	}
-
+	//if(setpoint.Y > (state_estimate.Y + XYZ_MAX_ERROR)){
+	//	setpoint.Y = state_estimate.Y + XYZ_MAX_ERROR;
+	//	setpoint.Y_dot = 0.0;
+	//	return;
+	//}
+	//else if(setpoint.Y < (state_estimate.Y - XYZ_MAX_ERROR)){
+	//	setpoint.Y = state_estimate.Y - XYZ_MAX_ERROR;
+	//	setpoint.Y_dot = 0.0;
+	//	return;
+	//}
+	//else{
+	//	setpoint.Y += setpoint.Y_dot*DT;
+	//}
+	setpoint.X += setpoint.X_dot*DT;
+	setpoint.Y += setpoint.Y_dot*DT;
 	return;
 }
 
@@ -101,6 +123,8 @@ int setpoint_manager_init(void)
 
 int setpoint_manager_update(void)
 {
+	double tmp_Z_throttle;
+
 	if(setpoint.initialized==0){
 		fprintf(stderr, "ERROR in setpoint_manager_update, not initialized yet\n");
 		return -1;
@@ -183,15 +207,18 @@ int setpoint_manager_update(void)
 		break;
 
 	case ALT_HOLD_4DOF:
-		setpoint.en_6dof	= 0;
-		setpoint.en_rpy_ctrl	= 1;
-		setpoint.en_Z_ctrl	= 1;
-		setpoint.en_XY_vel_ctrl	= 0;
-		setpoint.en_XY_pos_ctrl	= 0;
+		setpoint.en_6dof		= 0;
+		setpoint.en_rpy_ctrl		= 1;
+		setpoint.en_Z_ctrl		= 1;
+		setpoint.en_XY_vel_ctrl		= 0;
+		setpoint.en_XY_pos_ctrl		= 0;
+		//tmp_Z_throttle 		= setpoint.Z_throttle;
+		//setpoint.Z_throttle		= -user_input.thr_stick;
 
-		setpoint.roll		= user_input.roll_stick;
-		setpoint.pitch		= user_input.pitch_stick;
-		__update_Z();
+		setpoint.roll			= user_input.roll_stick;
+		setpoint.pitch			= user_input.pitch_stick;
+
+		__update_Z_alt_hold();
 		__update_yaw();
 		break;
 
@@ -245,9 +272,12 @@ int setpoint_manager_update(void)
 
 		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
 		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
-		__update_XY_pos();
-		__update_Z();
-		__update_yaw();
+		setpoint.X = 0.5;
+		setpoint.Y = 0.5;
+		//__update_XY_pos();
+		__update_Z_alt_hold();
+		setpoint.yaw = 0.0;
+		//__update_yaw();
 		break;
 
 	case POSITION_CONTROL_6DOF:
@@ -256,9 +286,6 @@ int setpoint_manager_update(void)
 		setpoint.en_Z_ctrl	= 1;
 		setpoint.en_XY_vel_ctrl	= 0;
 		setpoint.en_XY_pos_ctrl	= 1;
-
-		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
-		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
 		__update_XY_pos();
 		__update_Z();
 		__update_yaw();
