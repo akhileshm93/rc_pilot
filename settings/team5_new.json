@@ -50,6 +50,10 @@
 	"log_xbee": true,
 	"log_px4":true,
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 	"dest_ip": "192.168.8.1",
 	"my_sys_id": 1,
 	"mav_port": 14551,
@@ -119,9 +123,15 @@
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
 		"kp":0.15,
+<<<<<<< HEAD
 		"ki":0.01,
 		"kd":0.15,
 		"crossover_freq_rad_per_sec": 32.1,
+=======
+		"ki":0.0,
+		"kd":0.15,
+		"crossover_freq_rad_per_sec": 31.41,
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 		"numerator": [
 			0.1,
 			0.2,
@@ -141,7 +151,11 @@
 		"kp":0.5,
 		"ki":0.0,
 		"kd":0.1,
+<<<<<<< HEAD
 		"crossover_freq_rad_per_sec": 6.283,
+=======
+		"crossover_freq_rad_per_sec": 31.41,
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 		"numerator": [
 			0.1,
 			0.2,
@@ -178,9 +192,15 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.1,
 		"ki":0.0,
 		"kd":0.0,
+=======
+		"kp":2.5,
+		"ki":0.0,
+		"kd":1.25,
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 		"crossover_freq_rad_per_sec": 31.41,
 		"numerator": [
 			0.1,

@@ -189,11 +189,11 @@ int feedback_init(void)
 	__pxy4_init();
 
 	rc_filter_duplicate(&D_Z,	settings.altitude_controller);
-	rc_filter_duplicate(&D_Xdot_4,	settings.horiz_vel_ctrl_4dof);
+	//rc_filter_duplicate(&D_Xdot_4,	settings.horiz_vel_ctrl_4dof);
 	rc_filter_duplicate(&D_Xdot_6,	settings.horiz_vel_ctrl_6dof);
 	//rc_filter_duplicate(&D_X_4,	settings.horiz_pos_ctrl_4dof);
 	rc_filter_duplicate(&D_X_6,	settings.horiz_pos_ctrl_6dof);
-	rc_filter_duplicate(&D_Ydot_4,	settings.horiz_vel_ctrl_4dof);
+	//rc_filter_duplicate(&D_Ydot_4,	settings.horiz_vel_ctrl_4dof);
 	rc_filter_duplicate(&D_Ydot_6,	settings.horiz_vel_ctrl_6dof);
 	//rc_filter_duplicate(&D_Y_4,	settings.horiz_pos_ctrl_4dof);
 	rc_filter_duplicate(&D_Y_6,	settings.horiz_pos_ctrl_6dof);
@@ -274,6 +274,7 @@ int feedback_march(void)
 			rc_filter_prefill_outputs(&D_Z, tmp_z);
 			last_en_Z_ctrl = 1;
 		}
+<<<<<<< HEAD
 
 		if (setpoint.Z > -0.1){
 			alt_hold_throttle = -0.45;
@@ -283,6 +284,11 @@ int feedback_march(void)
 		}
 
         D_Z.gain = D_Z_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+=======
+		alt_hold_throttle = -0.56*(11.7/state_estimate.v_batt_lp);
+
+                D_Z.gain = D_Z_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 		tmp_z = rc_filter_march(&D_Z, -setpoint.Z+state_estimate.alt_bmp); //altitude is positive but +Z is down
 
 		u[VEC_Z] = (alt_hold_throttle - tmp_z)/(cos(state_estimate.roll)*cos(state_estimate.pitch));
@@ -299,7 +305,44 @@ int feedback_march(void)
 		u[VEC_Z] = tmp_z;
 		mix_add_input(u[VEC_Z], VEC_Z, mot);
 		alt_hold_throttle = u[VEC_Z];
+<<<<<<< HEAD
+=======
 	}
+
+	/***************************************************************************
+	* Position Controller
+	**********************
+	***************************************************************************/
+	if(setpoint.en_XY_pos_ctrl){
+		if(last_en_XY_ctrl == 0){
+			setpoint.X = state_estimate.X; // set X position setpoint to current position
+			setpoint.Y = state_estimate.Y; // set Y position setpoint to current position
+			rc_filter_reset(&D_X_4);
+			rc_filter_reset(&D_Y_4);
+			tmp_xy = 0.01;
+			rc_filter_prefill_outputs(&D_X_4, tmp_xy);
+			rc_filter_prefill_outputs(&D_Y_4, tmp_xy);
+			last_en_XY_ctrl = 1;
+		}
+
+		D_X_4.gain = D_X_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+		D_Y_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+
+		yaw = state_estimate.tb_imu[2];
+
+		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x);
+		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);
+
+		setpoint.roll = (-1/9.81)*(tmp_r*cos(yaw) - tmp_p*sin(yaw));
+		setpoint.pitch = (-1/9.81)*(-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
+
+        rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
+		rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
+
+		last_en_XY_ctrl = 1;
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+	}
+
 
 	/***************************************************************************
 	* Position Controller

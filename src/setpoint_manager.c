@@ -75,7 +75,10 @@ void __update_XY_pos(void)
 	if((user_input.roll_stick < 0.01) && (user_input.roll_stick > -0.01)){
 		setpoint.Y_dot = 0.0;
 	}
+<<<<<<< HEAD
 	// make sure setpoint doesn't go too far from state in case touching something
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 	//if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
 	//	setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
 	//	setpoint.X_dot = 0.0;
@@ -103,10 +106,13 @@ void __update_XY_pos(void)
 	//	setpoint.Y += setpoint.Y_dot*DT;
 	//}
 	setpoint.X += setpoint.X_dot*DT;
+<<<<<<< HEAD
 	setpoint.Y += setpoint.Y_dot*DT;
 	return;
 }
 
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 
 int setpoint_manager_init(void)
 {
@@ -272,12 +278,18 @@ int setpoint_manager_update(void)
 
 		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
 		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
+<<<<<<< HEAD
 		setpoint.X = 0.5;
 		setpoint.Y = 0.5;
 		//__update_XY_pos();
 		__update_Z_alt_hold();
 		setpoint.yaw = 0.0;
 		//__update_yaw();
+=======
+		__update_XY_pos();
+		__update_Z_alt_hold();
+		__update_yaw();
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 		break;
 
 	case POSITION_CONTROL_6DOF:

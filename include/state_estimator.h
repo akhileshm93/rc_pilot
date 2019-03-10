@@ -15,11 +15,14 @@
 #include <rc_pilot_defs.h>
 #include <rc/mpu.h>
 #include "px4flow.h"
+<<<<<<< HEAD
 
 // butterworth low pass filter
 #define ORDER           2
 #define CUTOFF_FREQ     2.0f    // 2rad/s, about 0.3hz
 #define BMP_CHECK_HZ    25
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 
 /**
  * This is the output from the state estimator. It contains raw sensor values
@@ -134,8 +137,11 @@ typedef struct state_estimate_t{
 
 	double PX4_Tx;
 	double PX4_Ty;
+<<<<<<< HEAD
 	double PX4_X;
 	double PX4_Y;
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 	int16_t PX4_ground_distance_int;
 	
 
@@ -220,6 +226,7 @@ int state_estimator_cleanup(void);
  * @return     void function
  */
 void PX4_velocity_calculation(state_estimate_t *state_estimate);
+<<<<<<< HEAD
 
 /**
  * @brief      prefill the butterworth filter for each PX4flow elements
@@ -234,6 +241,8 @@ void PX4_filter_prefill(state_estimate_t *state_estimate);
  * @return     void function
  */
 void PX4_filter_march(state_estimate_t *state_estimate);
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 
 
 #endif //  STATE_ESTIMATOR_H
