@@ -47,6 +47,8 @@ void print_usage()
 	printf("source code. You must specify the location of one of these\n");
 	printf("files or ideally the location of your own settings file.\n");
 	printf("\n");
+
+
 }
 
 /**
@@ -271,8 +273,8 @@ int main(int argc, char *argv[])
 	// start the IMU
 	rc_mpu_config_t mpu_conf = rc_mpu_default_config();
 	mpu_conf.i2c_bus = I2C_BUS;
-    	mpu_conf.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
-    	mpu_conf.gpio_interrupt_pin = GPIO_INT_PIN_PIN;
+    mpu_conf.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
+    mpu_conf.gpio_interrupt_pin = GPIO_INT_PIN_PIN;
 	mpu_conf.dmp_sample_rate = FEEDBACK_HZ;
 	mpu_conf.dmp_fetch_accel_gyro = 1;
 	//mpu_conf.orient = ORIENTATION_Z_UP;
@@ -304,7 +306,8 @@ int main(int argc, char *argv[])
 	}
 
 	// start printf_thread if running from a terminal
-	// if it was started as a background process then don't bother
+	// if it was started as a background process then don't bother	
+	
 	if(isatty(fileno(stdout))){
 		printf("initializing printf manager\n");
 		if(printf_init()<0){
@@ -334,6 +337,8 @@ int main(int argc, char *argv[])
 	rc_led_blink(RC_LED_GREEN,8.0,2.0); \
 	return 0;
 }
+
+
 
 
 

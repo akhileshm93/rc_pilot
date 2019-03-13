@@ -11,6 +11,8 @@
 #include <dirent.h>
 #include <string.h>
 
+#include "xbee_packet_t.h"
+
 
 // to allow printf macros for multi-architecture portability
 #define __STDC_FORMAT_MACROS
@@ -65,7 +67,7 @@ static int __write_header(FILE* fd)
 	}
 
 	if(settings.log_control_u){
-		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z");
+		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z,u_Z_i");
 	}
 
 	if(settings.log_motor_signals && settings.num_rotors==8){
@@ -78,6 +80,16 @@ static int __write_header(FILE* fd)
 		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4");
 	}
 
+	// add log: mocap data
+	if(settings.log_xbee){
+		fprintf(fd, ",X,Y,Z,q_X,q_Y,q_Z,q_W");
+	}
+
+	// add log: optic flow sensor data
+	if(settings.log_px4){
+		fprintf(fd, ",PX4_TX,PX4_Ty,PX4_gyro_x_int,PX4_gyro_y_int,PX4_gyro_z_int,PX4_ground_distance_int,PX4_dt_int,PX4_quality,PX4_X,PX4_Y,PX4_take_over");
+	}
+	
 	fprintf(fd, "\n");
 	return 0;
 
@@ -129,13 +141,14 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 	}
 
 	if(settings.log_control_u){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
 							e.u_roll,\
 							e.u_pitch,\
 							e.u_yaw,\
 							e.u_X,\
 							e.u_Y,\
-							e.u_Z);
+							e.u_Z,\
+							e.u_z_i);
 	}
 
 	if(settings.log_motor_signals && settings.num_rotors==8){
@@ -156,11 +169,42 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							e.mot_5,\
 							e.mot_6);
 	}
+
 	if(settings.log_motor_signals && settings.num_rotors==4){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F",		e.mot_1,\
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F",	e.mot_1,\
 							e.mot_2,\
 							e.mot_3,\
 							e.mot_4);
+	}
+
+	// add log: mocap data
+	if(settings.log_xbee){
+		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",		
+							xbeeMsg.x,\
+							xbeeMsg.y,\
+							xbeeMsg.z,\
+							xbeeMsg.qx,\
+							xbeeMsg.qy,\
+							xbeeMsg.qz,\
+							xbeeMsg.qw);
+	}
+	
+	// add log: PX4 data
+	if(settings.log_px4){
+		fprintf(fd, ",%.4F,%.4F,%.4d,%.4d,%.4d,%.4d,%.4d,%.4d,%.4F,%.4F,%.4d,%.4F,%.4F",
+							state_estimate.PX4_Tx,\
+							state_estimate.PX4_Ty,\
+							state_estimate.PX4_gyro_x_int,\
+							state_estimate.PX4_gyro_y_int,\
+							state_estimate.PX4_gyro_z_int,\
+							state_estimate.PX4_ground_distance_int,\
+							state_estimate.PX4_dt_int,\
+							state_estimate.PX4_quality,\
+							state_estimate.PX4_X,\
+							state_estimate.PX4_Y,\
+							state_estimate.PX4_take_over,\
+							state_estimate.PX4_X_raw,\
+							state_estimate.PX4_Y_raw);
 	}
 
 	fprintf(fd, "\n");
@@ -282,9 +326,9 @@ static log_entry_t __construct_new_entry()
 	l.roll		= state_estimate.tb_imu[0];
 	l.pitch		= state_estimate.tb_imu[1];
 	l.yaw		= state_estimate.tb_imu[2];
-	l.X		= state_estimate.pos_global[0];
-	l.Y		= state_estimate.pos_global[1];
-	l.Z		= state_estimate.pos_global[2];
+	l.X		= state_estimate.X;
+	l.Y		= state_estimate.Y;
+	l.Z		= state_estimate.Z;
 	l.Xdot		= state_estimate.vel_global[0];
 	l.Ydot		= state_estimate.vel_global[1];
 	l.Zdot		= state_estimate.vel_global[2];
@@ -305,6 +349,7 @@ static log_entry_t __construct_new_entry()
 	l.u_X		= fstate.u[VEC_Y];
 	l.u_Y		= fstate.u[VEC_X];
 	l.u_Z		= fstate.u[VEC_Z];
+	l.u_z_i 	= fstate.u_z_i;
 
 	l.mot_1		= fstate.m[0];
 	l.mot_2		= fstate.m[1];
@@ -314,6 +359,7 @@ static log_entry_t __construct_new_entry()
 	l.mot_6		= fstate.m[5];
 	l.mot_7		= fstate.m[6];
 	l.mot_8		= fstate.m[7];
+
 
 	return l;
 }

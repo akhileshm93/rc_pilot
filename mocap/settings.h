@@ -79,7 +79,6 @@ typedef struct settings_t{
 	int printf_motors;
 	int printf_mode;
 	int printf_xbee; 
-	int printf_PX4;
 	///@}
 
 	/** @name log settings */
@@ -90,8 +89,6 @@ typedef struct settings_t{
 	int log_setpoint;
 	int log_control_u;
 	int log_motor_signals;
-	int log_xbee;
-	int log_px4;
 	///@}
 
 	/** @name mavlink stuff */
@@ -106,11 +103,9 @@ typedef struct settings_t{
 	rc_filter_t pitch_controller;
 	rc_filter_t yaw_controller;
 	rc_filter_t altitude_controller;
-	rc_filter_t altitude_i_controller;
 	rc_filter_t horiz_vel_ctrl_4dof;
 	rc_filter_t horiz_vel_ctrl_6dof;
 	rc_filter_t horiz_pos_ctrl_4dof;
-	rc_filter_t horiz_pos_i_ctrl_4dof;
 	rc_filter_t horiz_pos_ctrl_6dof;
 	double max_XY_velocity;
 	double max_Z_velocity;
