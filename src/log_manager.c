@@ -67,8 +67,12 @@ static int __write_header(FILE* fd)
 	}
 
 	if(settings.log_control_u){
+<<<<<<< HEAD
 		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z,u_Z_i");
 	}
+=======
+		fprintf(fd, ",u_roll,u_pitch,u_yaw,u_X,u_Y,u_Z");
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 
 	if(settings.log_motor_signals && settings.num_rotors==8){
 		fprintf(fd, ",mot_1,mot_2,mot_3,mot_4,mot_5,mot_6,mot_7,mot_8");
@@ -87,7 +91,15 @@ static int __write_header(FILE* fd)
 
 	// add log: optic flow sensor data
 	if(settings.log_px4){
+<<<<<<< HEAD
 		fprintf(fd, ",PX4_TX,PX4_Ty,PX4_gyro_x_int,PX4_gyro_y_int,PX4_gyro_z_int,PX4_ground_distance_int,PX4_dt_int,PX4_quality,PX4_X,PX4_Y,PX4_take_over");
+=======
+<<<<<<< HEAD
+		fprintf(fd, ",PX4_TX,PX4_Ty,PX4_gyro_x_int,PX4_gyro_y_int,PX4_gyro_z_int,PX4_ground_distance_int,PX4_dt_int,PX4_quality,PX4_X,PX4_Y");
+=======
+		fprintf(fd, ",PX4_TX,PX4_Ty,PX4_gyro_x_int,PX4_gyro_y_int,PX4_gyro_z_int,PX4_ground_distance_int,PX4_dt_int,PX4_quality");
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 	}
 	
 	fprintf(fd, "\n");
@@ -97,14 +109,12 @@ static int __write_header(FILE* fd)
 }
 
 
-static int __write_log_entry(FILE* fd, log_entry_t e)
-{
-	// always print loop index
-	fprintf(fd, "%" PRIu64 ",%" PRIu64, e.loop_index, e.last_step_ns);
+	// add log: optic flow sensor data
+	if(settings.log_px4){
+		fprintf(fd, ",PX4_m_x,m_y,pix_x,pix_y,gyro_x,gyro_y,gyro_z,x_int,y_int,gyro_x_int,gyro_y_int,gyro_z_int,qual");
+	}
 
-	if(settings.log_sensors){
-		fprintf(fd, ",%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F,%.4F",\
-							e.v_batt,\
+	fprintf(fd, "\n");
 							e.alt_bmp_raw,\
 							e.gyro_roll,\
 							e.gyro_pitch,\
@@ -191,7 +201,15 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 	
 	// add log: PX4 data
 	if(settings.log_px4){
+<<<<<<< HEAD
 		fprintf(fd, ",%.4F,%.4F,%.4d,%.4d,%.4d,%.4d,%.4d,%.4d,%.4F,%.4F,%.4d,%.4F,%.4F",
+=======
+<<<<<<< HEAD
+		fprintf(fd, ",%.4F,%.4F,%.4d,%.4d,%.4d,%.4d,%.4d,%.4d,%.4F,%.4F",
+=======
+		fprintf(fd, ",%.4F,%.4F,%.4d,%.4d,%.4d,%.4d,%.4d,%.4d",		
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 							state_estimate.PX4_Tx,\
 							state_estimate.PX4_Ty,\
 							state_estimate.PX4_gyro_x_int,\
@@ -199,12 +217,22 @@ static int __write_log_entry(FILE* fd, log_entry_t e)
 							state_estimate.PX4_gyro_z_int,\
 							state_estimate.PX4_ground_distance_int,\
 							state_estimate.PX4_dt_int,\
+<<<<<<< HEAD
 							state_estimate.PX4_quality,\
 							state_estimate.PX4_X,\
 							state_estimate.PX4_Y,\
 							state_estimate.PX4_take_over,\
 							state_estimate.PX4_X_raw,\
 							state_estimate.PX4_Y_raw);
+=======
+<<<<<<< HEAD
+							state_estimate.PX4_quality,\
+							state_estimate.PX4_X,\
+							state_estimate.PX4_Y);
+=======
+							state_estimate.PX4_quality);
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 	}
 
 	fprintf(fd, "\n");

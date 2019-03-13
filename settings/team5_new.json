@@ -50,6 +50,13 @@
 	"log_xbee": true,
 	"log_px4":true,
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 	"dest_ip": "192.168.8.1",
 	"my_sys_id": 1,
 	"mav_port": 14551,
@@ -58,7 +65,11 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.55,
+=======
+		"kp":0.25,
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		"ki":0.0,
 		"kd":0.1,
 		"crossover_freq_rad_per_sec": 62.83,
@@ -78,7 +89,11 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.5,
+=======
+		"kp":0.25,
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		"ki":0.0,
 		"kd":0.1,
 		"crossover_freq_rad_per_sec": 62.83,
@@ -98,7 +113,11 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":10.0,
+=======
+		"kp":1.0,
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		"ki":0.0,
 		"kd":0.1,
 		"crossover_freq_rad_per_sec": 31.41,
@@ -118,6 +137,7 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.25,
 		"ki":0.0,
 		"kd":0.15,
@@ -142,6 +162,18 @@
 		"ki":0.1,
 		"kd":0.0,
 		"crossover_freq_rad_per_sec": 31.41,
+=======
+		"kp":0.15,
+<<<<<<< HEAD
+		"ki":0.01,
+		"kd":0.15,
+		"crossover_freq_rad_per_sec": 32.1,
+=======
+		"ki":0.0,
+		"kd":0.15,
+		"crossover_freq_rad_per_sec": 31.41,
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		"numerator": [
 			0.1,
 			0.2,
@@ -158,10 +190,21 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.3,
 		"ki":0.0,
 		"kd":0.5,
 		"crossover_freq_rad_per_sec": 62.83,
+=======
+		"kp":0.5,
+		"ki":0.0,
+		"kd":0.1,
+<<<<<<< HEAD
+		"crossover_freq_rad_per_sec": 6.283,
+=======
+		"crossover_freq_rad_per_sec": 31.41,
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		"numerator": [
 			0.1,
 			0.2,
@@ -198,6 +241,7 @@
 		"gain": 1.0,
 		"CT_or_DT": "CT",
 		"TF_or_PID": "PID",
+<<<<<<< HEAD
 		"kp":0.6,
 		"ki":0.0,
 		"kd":0.4,
@@ -221,6 +265,17 @@
 		"kp":0.0,
 		"ki":0.01,
 		"kd":0.0,
+=======
+<<<<<<< HEAD
+		"kp":0.1,
+		"ki":0.0,
+		"kd":0.0,
+=======
+		"kp":2.5,
+		"ki":0.0,
+		"kd":1.25,
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		"crossover_freq_rad_per_sec": 31.41,
 		"numerator": [
 			0.1,
@@ -254,6 +309,11 @@
 		]
 	},
 
+<<<<<<< HEAD
 	"max_XY_velocity": 0.1,
 	"max_Z_velocity": 0.5
+=======
+	"max_XY_velocity": 1.0,
+	"max_Z_velocity": 1.0
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 }

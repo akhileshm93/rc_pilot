@@ -78,12 +78,49 @@ void __update_XY_pos(void)
 	if((user_input.roll_stick < 0.01) && (user_input.roll_stick > -0.01)){
 		setpoint.Y_dot = 0.0;
 	}
+<<<<<<< HEAD
 
 	setpoint.X += setpoint.X_dot*DT;
+=======
+<<<<<<< HEAD
+	// make sure setpoint doesn't go too far from state in case touching something
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+	//if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
+	//	setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
+	//	setpoint.X_dot = 0.0;
+	//}
+	//else if(setpoint.X < (state_estimate.X - XYZ_MAX_ERROR)){
+	//	setpoint.X = state_estimate.X - XYZ_MAX_ERROR;
+	//	setpoint.X_dot = 0.0;
+	//	return;
+	//}
+	//else{
+	//	setpoint.X += setpoint.X_dot*DT;
+	//}
+
+	//if(setpoint.Y > (state_estimate.Y + XYZ_MAX_ERROR)){
+	//	setpoint.Y = state_estimate.Y + XYZ_MAX_ERROR;
+	//	setpoint.Y_dot = 0.0;
+	//	return;
+	//}
+	//else if(setpoint.Y < (state_estimate.Y - XYZ_MAX_ERROR)){
+	//	setpoint.Y = state_estimate.Y - XYZ_MAX_ERROR;
+	//	setpoint.Y_dot = 0.0;
+	//	return;
+	//}
+	//else{
+	//	setpoint.Y += setpoint.Y_dot*DT;
+	//}
+	setpoint.X += setpoint.X_dot*DT;
+<<<<<<< HEAD
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 	setpoint.Y += setpoint.Y_dot*DT;
 	return;
 }
 
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 
 int setpoint_manager_init(void)
 {
@@ -102,8 +139,11 @@ int setpoint_manager_init(void)
 int setpoint_manager_update(void)
 {
 	double tmp_Z_throttle;
+<<<<<<< HEAD
 	static uint64_t curr_time;
 	curr_time = rc_nanos_since_boot() - start_time;
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 
 	if(setpoint.initialized==0){
 		fprintf(stderr, "ERROR in setpoint_manager_update, not initialized yet\n");
@@ -251,13 +291,27 @@ int setpoint_manager_update(void)
 		setpoint.en_XY_pos_ctrl	= 1;
 		//setpoint.yaw = 0.0;
 
+<<<<<<< HEAD
 		//setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
 		//setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
 		//setpoint.X = 0.5;
 		//setpoint.Y = 0.5;
+=======
+		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
+		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
+<<<<<<< HEAD
+		setpoint.X = 0.5;
+		setpoint.Y = 0.5;
+		//__update_XY_pos();
+		__update_Z_alt_hold();
+		setpoint.yaw = 0.0;
+		//__update_yaw();
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 		__update_XY_pos();
 		__update_Z_alt_hold();
 		__update_yaw();
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
 		break;
 
 	case POSITION_CONTROL_6DOF:
