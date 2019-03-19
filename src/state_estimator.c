@@ -59,10 +59,20 @@ static rc_kalman_t alt_kf = RC_KALMAN_INITIALIZER;
 static rc_kalman_t px_kf = RC_KALMAN_INITIALIZER;
 static rc_kalman_t py_kf = RC_KALMAN_INITIALIZER;
 static rc_filter_t acc_lp = RC_FILTER_INITIALIZER;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 static rc_filter_t accx_lp = RC_FILTER_INITIALIZER;
 static rc_filter_t accy_lp = RC_FILTER_INITIALIZER;
 static rc_filter_t PX4_lp_Tx = RC_FILTER_INITIALIZER;
 static rc_filter_t PX4_lp_Ty = RC_FILTER_INITIALIZER;
+<<<<<<< HEAD
+=======
+=======
+static rc_filter_t PX4_lp = RC_FILTER_INITIALIZER;
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 // counter to slow down I2C readings
 int counter = 1;
@@ -200,6 +210,23 @@ static int __altitude_init(void)
 	printf("Initializing Lidar...\n");
 	VL53L1X_SensorInit(&Device);
 	rc_usleep(1E4);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+	//VL53L1X_SetDistanceMode(&Device,2);
+	//VL53L1X_SetInterMeasurementInMs(&Device,200);
+	//VL53L1X_SetTimingBudgetInMs(&Device,100);
+
+    //initialize px4flow
+	printf("Initializing Optic Flow Sensor...\n");
+    PX4Flow_Initialize(&px4flow);
+	rc_usleep(1E4);
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	VL53L1X_GetDistanceMode(&Device,&rtn);
 	printf("Distance Mode: %d\n", rtn);
@@ -213,11 +240,21 @@ static int __altitude_init(void)
 
 	VL53L1X_StartRanging(&Device);
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	//initialize px4flow
 	printf("Initializing Optic Flow Sensor...\n");
     PX4Flow_Initialize(&px4flow);
 	rc_usleep(1E4);
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
 	//initialize altitude kalman filter and bmp sensor
    	rc_matrix_t F = RC_MATRIX_INITIALIZER;
     	rc_matrix_t G = RC_MATRIX_INITIALIZER;
@@ -225,6 +262,28 @@ static int __altitude_init(void)
     	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
     	rc_matrix_t R = RC_MATRIX_INITIALIZER;
     	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+=======
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
+	//initialize altitude kalman filter and bmp sensor
+   	rc_matrix_t F = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t G = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t H = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t Q = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t R = RC_MATRIX_INITIALIZER;
+    	rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+<<<<<<< HEAD
+=======
+=======
+	//initialize altitude kalman filter and bmp sensor
+   	rc_matrix_t F = RC_MATRIX_INITIALIZER;
+    rc_matrix_t G = RC_MATRIX_INITIALIZER;
+    rc_matrix_t H = RC_MATRIX_INITIALIZER;
+    rc_matrix_t Q = RC_MATRIX_INITIALIZER;
+    rc_matrix_t R = RC_MATRIX_INITIALIZER;
+    rc_matrix_t Pi = RC_MATRIX_INITIALIZER;
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	const int Nx = 3;
 	const int Ny = 1;
@@ -288,11 +347,22 @@ static int __altitude_init(void)
 
 	// initialize the little LP filter to take out accel noise
 	if(rc_filter_first_order_lowpass(&acc_lp, DT, 20*DT)) return -1;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	if(rc_filter_first_order_lowpass(&accx_lp, DT, 20*DT)) return -1;
 	if(rc_filter_first_order_lowpass(&accy_lp, DT, 20*DT)) return -1;
 	// initialize the butterworth LP filter to take out PX4 noise
 	if(rc_filter_butterworth_lowpass(&PX4_lp_Tx, ORDER, DT, CUTOFF_FREQ)) return -1;
 	if(rc_filter_butterworth_lowpass(&PX4_lp_Ty, ORDER, DT, CUTOFF_FREQ)) return -1;
+<<<<<<< HEAD
+=======
+=======
+	// initialize the butterworth LP filter to take out PX4 noise
+	if(rc_filter_butterworth_lowpass(&PX4_lp, ORDER, DT, CUTOFF_FREQ)) return -1;
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	// init barometer and read in first data
 	if(rc_bmp_read(&bmp_data)) return -1;
@@ -312,10 +382,19 @@ static void __altitude_march(void)
 	double accel_vec[3];
 	static rc_vector_t u = RC_VECTOR_INITIALIZER;
 	static rc_vector_t y = RC_VECTOR_INITIALIZER;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	static rc_vector_t u_x = RC_VECTOR_INITIALIZER;
 	static rc_vector_t y_x = RC_VECTOR_INITIALIZER;
 	static rc_vector_t u_y = RC_VECTOR_INITIALIZER;
 	static rc_vector_t y_y = RC_VECTOR_INITIALIZER;
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	uint16_t distance = 0;
 	uint8_t tmp = 0;
 
@@ -323,14 +402,70 @@ static void __altitude_march(void)
 	state_estimate.bmp_pressure_raw = bmp_data.pressure_pa;
 	VL53L1X_GetDistance(&Device, &distance);
 	state_estimate.alt_bmp_raw = distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
+<<<<<<< HEAD
 	state_estimate.bmp_temp = bmp_data.temp_c;
 	
+=======
+<<<<<<< HEAD
+	state_estimate.bmp_temp = bmp_data.temp_c;
+	
+=======
+<<<<<<< HEAD
+	state_estimate.bmp_temp = bmp_data.temp_c;
+	
+
+	//grab data from PX4flow
+	PX4Flow_ReadIntFrame(&px4flow, &iframe);
+=======
+	//state_estimate.alt_bmp_raw = bmp_data.alt_m;
+	state_estimate.bmp_temp = bmp_data.temp_c;
+	//printf("\n Lidar Distance: %f m  ", distance/1000.0);
+
+
+	PX4Flow_ReadIntFrame(&px4flow, &iframe);
+	//PX4Flow_ReadIntFrame(&px4flow, &iframe);
+    //printf(" timestamp: %3d \r",frame.sonar_timestamp);
+	//fflush(stdout);
+    //rc_usleep(1E6*DT);
+
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+	state_estimate.PX4_pix_x_int = iframe.pixel_flow_x_integral;
+	state_estimate.PX4_pix_y_int = iframe.pixel_flow_y_integral;
+	state_estimate.PX4_gyro_x_int = iframe.gyro_x_rate_integral;
+	state_estimate.PX4_gyro_y_int = iframe.gyro_y_rate_integral;
+	state_estimate.PX4_gyro_z_int = iframe.gyro_z_rate_integral;
+	state_estimate.PX4_ground_distance_int = iframe.ground_distance;
+	state_estimate.PX4_dt_int = iframe.integration_timespan;
+	state_estimate.PX4_quality = iframe.quality;
+	
+<<<<<<< HEAD
+	
+
+
+
+
+=======
+	//printf("\n %3d | %3d \r", frame.qual, state_estimate.PX4_qual);
+	PX4_velocity_calculation(&state_estimate);
+
+	
+	//printf("\n Pix_x: %3d | Pix_y: %3d | dt: %3d | wx: %3d | wy: %3d | wz: %3d | Z: %3d | Tx: %3d | Ty: %3d \r",state_estimate.PX4_pix_x,state_estimate.PX4_pix_y,frame.sonar_timestamp,frame.gyro_x_rate,frame.gyro_y_rate,frame.gyro_z_rate,state_estimate.alt_bmp_raw,state_estimate.PX4_Tx,state_estimate.PX4_Ty);
+	//printf("\n Lidar distance: %3f | sonar_distance: %3f \r",state_estimate.alt_bmp_raw,iframe.ground_distance);
+	//printf("\n Lidar_distance: %3f | sonar_distance: %3f | Tx: %3f | Ty: %3f | qual: %3d \r",state_estimate.alt_bmp_raw,iframe.ground_distance,state_estimate.PX4_Tx,state_estimate.PX4_Ty,iframe.quality);
+	
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	// make copy of acceleration reading before rotating
 	for(i=0;i<3;i++) accel_vec[i] = state_estimate.accel[i];
 	// rotate accel vector
 	rc_quaternion_rotate_vector_array(accel_vec, state_estimate.quat_imu);
 
 	if(alt_kf.step==0){
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 			rc_vector_zeros(&u, 1);
         	rc_vector_zeros(&y, 1); 
 			rc_vector_zeros(&u_x,1);
@@ -338,13 +473,34 @@ static void __altitude_march(void)
 			rc_vector_zeros(&u_y,1);
 			rc_vector_zeros(&y_y,1);
 		alt_kf.x_est.d[0] = -distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
+<<<<<<< HEAD
 		rc_filter_prefill_inputs(&acc_lp, accel_vec[2]+GRAVITY);
 		rc_filter_prefill_outputs(&acc_lp, accel_vec[2]+GRAVITY);
 		rc_filter_prefill_inputs(&accx_lp, accel_vec[0]);
 		rc_filter_prefill_outputs(&accx_lp, accel_vec[0]);
 		rc_filter_prefill_inputs(&accy_lp, accel_vec[1]);
 		rc_filter_prefill_outputs(&accy_lp, accel_vec[1]);
+=======
+		rc_filter_prefill_inputs(&acc_lp, accel_vec[2]+GRAVITY);
+		rc_filter_prefill_outputs(&acc_lp, accel_vec[2]+GRAVITY);
+		rc_filter_prefill_inputs(&accx_lp, accel_vec[0]);
+		rc_filter_prefill_outputs(&accx_lp, accel_vec[0]);
+		rc_filter_prefill_inputs(&accy_lp, accel_vec[1]);
+		rc_filter_prefill_outputs(&accy_lp, accel_vec[1]);
+=======
+        	rc_vector_zeros(&u, 1);
+        	rc_vector_zeros(&y, 1);  //changed 1 to 2 for combining lidar output
+		alt_kf.x_est.d[0] = -distance*cos(state_estimate.roll)*cos(state_estimate.pitch)/1000.0;
+		rc_filter_prefill_inputs(&acc_lp, accel_vec[2]+GRAVITY);
+		rc_filter_prefill_outputs(&acc_lp, accel_vec[2]+GRAVITY);
+		PX4_filter_prefill(&state_estimate);
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	}
+
+	//PX4flow butterworth filter march
+	PX4_filter_march(&state_estimate);
+	PX4_velocity_calculation(&state_estimate);
 
 	// calculate acceleration and smooth it just a tad
 	// put result in u for kalman and flip sign since with altitude, positive
@@ -364,7 +520,12 @@ static void __altitude_march(void)
 	// altitude estimate
 	state_estimate.alt_bmp		= alt_kf.x_est.d[0];
 	state_estimate.alt_bmp_vel	= alt_kf.x_est.d[1];
+<<<<<<< HEAD
 	state_estimate.alt_bmp_accel = alt_kf.x_est.d[2];
+=======
+	state_estimate.alt_bmp_accel	= alt_kf.x_est.d[2];
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 
 	// kalman filter for position 
@@ -433,14 +594,22 @@ static void __altitude_march(void)
 			state_estimate.PX4_Y		= py_kf.x_est.d[0];
 		}
 	}
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	return;
 }
 
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 static void __feedback_select(void)
 {
 	state_estimate.roll = state_estimate.tb_imu[0];
@@ -496,6 +665,13 @@ int state_estimator_march(void)
 	__mag_march();
 	__feedback_select();
 	__altitude_march();
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+	//__feedback_select();	
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	__mocap_check_timeout();
 	return 0;
 }
@@ -523,6 +699,37 @@ int state_estimator_cleanup(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+/*
+void PX4_velocity_calculation(state_estimate_t *state_estimator) {
+	double Tz = 0;
+	double x =  (state_estimate.PX4_pix_x)/10.0*24*10E-6;   //m
+	double y =  (state_estimate.PX4_pix_y)/10.0*24*10E-6;   //m
+	double wx =  state_estimate.PX4_gyro_x;                 //rad/s
+	double wy =  state_estimate.PX4_gyro_y;                 //rad/s
+	double wz =  state_estimate.PX4_gyro_z;                 //rad/s
+	double Z =  -state_estimate.alt_bmp_raw;                 //m
+	double dt = state_estimate.PX4_dt*10E-3;				 //sec
+	double f = 16/1000.0;                                    //mag
+
+
+	double Tx,Ty;
+
+	state_estimate.PX4_Tx = -(x/dt + wy*f - wz*y)*Z/f;     // m/s TODO:check sign 
+	state_estimate.PX4_Ty = -(y/dt - wx*f + wz*x)*Z/f;     // m/s TODO:chekc sign
+
+
+
+}
+*/
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 void PX4_velocity_calculation(state_estimate_t *state_estimate) {
 	
@@ -557,14 +764,47 @@ void PX4_velocity_calculation(state_estimate_t *state_estimate) {
 
 	 state_estimate->PX4_Tx = velocity_x;
 	 state_estimate->PX4_Ty = velocity_y;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	 //state_estimate->PX4_X = px;
 	 //state_estimate->PX4_Y = py;
 	 
 	 
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+	 state_estimate->PX4_X = px;
+	 state_estimate->PX4_Y = py;
+	 
+	 
+=======
+	 
+	 
+	/*
+	 printf("\n Lidar_distance: %3f | sonar_distance: %3f | Vx: %5f | Vy: %5f | qual: %3d | dt: %3d \r",
+	 			state_estimate->alt_bmp_raw,\
+				state_estimate->PX4_ground_distance_int,\
+				state_estimate->PX4_pix_x_int,\
+				state_estimate->PX4_pix_y_int,\
+				state_estimate->PX4_quality,\
+				state_estimate->PX4_dt_int);
+
+	 */
+	 
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	 }
 
 	
 }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 void PX4_filter_prefill(state_estimate_t *state_estimate){
 
@@ -573,6 +813,32 @@ void PX4_filter_prefill(state_estimate_t *state_estimate){
 
 	rc_filter_prefill_inputs(&PX4_lp_Tx, state_estimate->PX4_Ty);
     rc_filter_prefill_outputs(&PX4_lp_Ty, state_estimate->PX4_Ty);
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+
+void PX4_filter_prefill(state_estimate_t *state_estimate){
+
+	rc_filter_prefill_inputs(&PX4_lp, state_estimate->PX4_gyro_x_int);
+    rc_filter_prefill_outputs(&PX4_lp, state_estimate->PX4_gyro_x_int);
+
+	rc_filter_prefill_inputs(&PX4_lp, state_estimate->PX4_gyro_y_int);
+    rc_filter_prefill_outputs(&PX4_lp, state_estimate->PX4_gyro_y_int);
+
+	rc_filter_prefill_inputs(&PX4_lp, state_estimate->PX4_pix_x_int);
+    rc_filter_prefill_outputs(&PX4_lp, state_estimate->PX4_pix_x_int);
+
+	rc_filter_prefill_inputs(&PX4_lp, state_estimate->PX4_pix_y_int);
+    rc_filter_prefill_outputs(&PX4_lp, state_estimate->PX4_pix_y_int);
+
+	rc_filter_prefill_inputs(&PX4_lp, state_estimate->PX4_dt_int);
+    rc_filter_prefill_outputs(&PX4_lp, state_estimate->PX4_dt_int);
+
+	rc_filter_prefill_inputs(&PX4_lp, state_estimate->PX4_ground_distance_int);
+    rc_filter_prefill_outputs(&PX4_lp, state_estimate->PX4_ground_distance_int);
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 
 }
@@ -580,7 +846,27 @@ void PX4_filter_prefill(state_estimate_t *state_estimate){
 
 void PX4_filter_march(state_estimate_t *state_estimate){
 
+<<<<<<< HEAD
 	state_estimate->PX4_Tx = rc_filter_march(&PX4_lp_Tx,state_estimate->PX4_Tx);
 	state_estimate->PX4_Ty = rc_filter_march(&PX4_lp_Ty,state_estimate->PX4_Ty);
 	
 }
+=======
+<<<<<<< HEAD
+	state_estimate->PX4_Tx = rc_filter_march(&PX4_lp_Tx,state_estimate->PX4_Tx);
+	state_estimate->PX4_Ty = rc_filter_march(&PX4_lp_Ty,state_estimate->PX4_Ty);
+	
+}
+=======
+	state_estimate->PX4_gyro_x_int = rc_filter_march(&PX4_lp,state_estimate->PX4_gyro_x_int);
+	state_estimate->PX4_gyro_y_int = rc_filter_march(&PX4_lp,state_estimate->PX4_gyro_y_int);
+	state_estimate->PX4_pix_x_int = rc_filter_march(&PX4_lp,state_estimate->PX4_pix_x_int);
+	state_estimate->PX4_pix_y_int = rc_filter_march(&PX4_lp,state_estimate->PX4_pix_y_int);
+	state_estimate->PX4_dt_int = rc_filter_march(&PX4_lp,state_estimate->PX4_dt_int);
+	state_estimate->PX4_ground_distance_int = rc_filter_march(&PX4_lp,state_estimate->PX4_ground_distance_int);
+
+}
+=======
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915

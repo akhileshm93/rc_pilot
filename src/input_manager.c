@@ -180,7 +180,7 @@ void new_dsm_data_callback()
 
 	// saturate the sticks to avoid possible erratic behavior
 	// throttle can drop below -1 so extend the range for thr
-	rc_saturate_double(&new_thr,   -1.0, 1.0);
+	rc_saturate_double(&new_thr,   0.0, 1.0);
 	rc_saturate_double(&new_roll,  -1.0, 1.0);
 	rc_saturate_double(&new_pitch, -1.0, 1.0);
 	rc_saturate_double(&new_yaw,   -1.0, 1.0);

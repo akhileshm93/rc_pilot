@@ -32,7 +32,15 @@
 feedback_state_t fstate; // extern variable in feedback.h
 
 // keep original controller gains for scaling later
+<<<<<<< HEAD
 static double D_roll_gain_orig, D_pitch_gain_orig, D_yaw_gain_orig, D_X_4_gain_orig, D_Y_4_gain_orig, D_X_4_i_gain_orig, D_Y_4_i_gain_orig, D_Z_gain_orig, D_Z_i_gain_orig;
+=======
+<<<<<<< HEAD
+static double D_roll_gain_orig, D_pitch_gain_orig, D_yaw_gain_orig, D_X_4_gain_orig, D_Y_4_gain_orig, D_X_4_i_gain_orig, D_Y_4_i_gain_orig, D_Z_gain_orig, D_Z_i_gain_orig;
+=======
+static double D_roll_gain_orig, D_pitch_gain_orig, D_yaw_gain_orig, D_X_4_gain_orig, D_Y_4_gain_orig, D_Z_gain_orig;
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 
 // filters
@@ -73,8 +81,18 @@ static void __rpy_init(void)
 {
 	// get controllers from settings
 
+<<<<<<< HEAD
 	rc_filter_duplicate(&D_roll, settings.roll_controller);
 	rc_filter_duplicate(&D_pitch, settings.pitch_controller);
+=======
+<<<<<<< HEAD
+	rc_filter_duplicate(&D_roll, settings.roll_controller);
+	rc_filter_duplicate(&D_pitch, settings.pitch_controller);
+=======
+	rc_filter_duplicate(&D_roll,	settings.roll_controller);
+	rc_filter_duplicate(&D_pitch,	settings.pitch_controller);
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	rc_filter_duplicate(&D_yaw,	settings.yaw_controller);
 
 	#ifdef DEBUG
@@ -107,36 +125,79 @@ static void __pxy4_init(void)
 	// get controllers from settings
 	rc_filter_duplicate(&D_X_4,	settings.horiz_pos_ctrl_4dof);
 	rc_filter_duplicate(&D_Y_4,	settings.horiz_pos_ctrl_4dof);
+<<<<<<< HEAD
 	rc_filter_duplicate(&D_X_4_i, settings.horiz_pos_i_ctrl_4dof);
 	rc_filter_duplicate(&D_Y_4_i, settings.horiz_pos_i_ctrl_4dof);
+=======
+<<<<<<< HEAD
+	rc_filter_duplicate(&D_X_4_i, settings.horiz_pos_i_ctrl_4dof);
+	rc_filter_duplicate(&D_Y_4_i, settings.horiz_pos_i_ctrl_4dof);
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	#ifdef DEBUG
 	printf("X POS CONTROLLER:\n");
 	rc_filter_print(D_X_4);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	rc_filter_print(D_X_4_i);
 	printf("Y POS CONTROLLER:\n");
 	rc_filter_print(D_Y_4);
 	rc_filter_print(D_Y_4_i);
+<<<<<<< HEAD
+=======
+=======
+	printf("Y POS CONTROLLER:\n");
+	rc_filter_print(D_Y_4);
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	#endif
 
 	// save original gains as we will scale these by battery voltage later
 	D_X_4_gain_orig = D_X_4.gain;
 	D_Y_4_gain_orig = D_Y_4.gain;
+<<<<<<< HEAD
 	D_X_4_i_gain_orig = D_X_4_i.gain;
 	D_Y_4_i_gain_orig = D_Y_4_i.gain;
+=======
+<<<<<<< HEAD
+	D_X_4_i_gain_orig = D_X_4_i.gain;
+	D_Y_4_i_gain_orig = D_Y_4_i.gain;
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	// enable saturation. these limits will be changed late but we need to
 	// enable now so that soft start can also be enabled
 	rc_filter_enable_saturation(&D_X_4, -MAX_X_COMPONENT, MAX_X_COMPONENT);
 	rc_filter_enable_saturation(&D_Y_4, -MAX_Y_COMPONENT, MAX_Y_COMPONENT);
+<<<<<<< HEAD
 	rc_filter_enable_saturation(&D_X_4_i, -MAX_X_COMPONENT, MAX_X_COMPONENT);
 	rc_filter_enable_saturation(&D_Y_4_i, -MAX_Y_COMPONENT, MAX_Y_COMPONENT);
+=======
+<<<<<<< HEAD
+	rc_filter_enable_saturation(&D_X_4_i, -MAX_X_COMPONENT, MAX_X_COMPONENT);
+	rc_filter_enable_saturation(&D_Y_4_i, -MAX_Y_COMPONENT, MAX_Y_COMPONENT);
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	// enable soft start
 	rc_filter_enable_soft_start(&D_X_4, SOFT_START_SECONDS);
 	rc_filter_enable_soft_start(&D_Y_4, SOFT_START_SECONDS);
+<<<<<<< HEAD
 	rc_filter_enable_soft_start(&D_X_4_i, SOFT_START_SECONDS);
 	rc_filter_enable_soft_start(&D_Y_4_i, SOFT_START_SECONDS);
+=======
+<<<<<<< HEAD
+	rc_filter_enable_soft_start(&D_X_4_i, SOFT_START_SECONDS);
+	rc_filter_enable_soft_start(&D_Y_4_i, SOFT_START_SECONDS);
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 }
 
 
@@ -181,11 +242,22 @@ int feedback_arm(void)
 	rc_filter_reset(&D_pitch);
 	rc_filter_reset(&D_yaw);
 	rc_filter_reset(&D_Z);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	rc_filter_reset(&D_Z_i);
 	rc_filter_reset(&D_X_4);
 	rc_filter_reset(&D_Y_4);
 	rc_filter_reset(&D_X_4_i);
 	rc_filter_reset(&D_Y_4_i);
+<<<<<<< HEAD
+=======
+=======
+	rc_filter_reset(&D_X_4);
+	rc_filter_reset(&D_Y_4);
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	// prefill filters with current error
 	rc_filter_prefill_inputs(&D_roll, -state_estimate.roll);
@@ -208,14 +280,43 @@ int feedback_init(void)
 	__pxy4_init();
 
 	rc_filter_duplicate(&D_Z,	settings.altitude_controller);
+<<<<<<< HEAD
 	rc_filter_duplicate(&D_Z_i,	settings.altitude_i_controller);
 	rc_filter_duplicate(&D_Xdot_4,	settings.horiz_vel_ctrl_4dof);
 	rc_filter_duplicate(&D_Xdot_6,	settings.horiz_vel_ctrl_6dof);
+=======
+<<<<<<< HEAD
+	rc_filter_duplicate(&D_Z_i,	settings.altitude_i_controller);
+	rc_filter_duplicate(&D_Xdot_4,	settings.horiz_vel_ctrl_4dof);
+	rc_filter_duplicate(&D_Xdot_6,	settings.horiz_vel_ctrl_6dof);
+=======
+	//rc_filter_duplicate(&D_Xdot_4,	settings.horiz_vel_ctrl_4dof);
+	rc_filter_duplicate(&D_Xdot_6,	settings.horiz_vel_ctrl_6dof);
+	//rc_filter_duplicate(&D_X_4,	settings.horiz_pos_ctrl_4dof);
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	rc_filter_duplicate(&D_X_6,	settings.horiz_pos_ctrl_6dof);
-	rc_filter_duplicate(&D_Ydot_4,	settings.horiz_vel_ctrl_4dof);
+	//rc_filter_duplicate(&D_Ydot_4,	settings.horiz_vel_ctrl_4dof);
 	rc_filter_duplicate(&D_Ydot_6,	settings.horiz_vel_ctrl_6dof);
+<<<<<<< HEAD
 	rc_filter_duplicate(&D_Y_6,	settings.horiz_pos_ctrl_6dof);
 
+=======
+<<<<<<< HEAD
+	rc_filter_duplicate(&D_Y_6,	settings.horiz_pos_ctrl_6dof);
+
+=======
+	//rc_filter_duplicate(&D_Y_4,	settings.horiz_pos_ctrl_4dof);
+	rc_filter_duplicate(&D_Y_6,	settings.horiz_pos_ctrl_6dof);
+
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
+	#ifdef DEBUG
+	printf("ALTITUDE CONTROLLER:\n");
+	rc_filter_print(D_Z);
+	rc_filter_print(D_Z_i);
+	#endif
+
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 	#ifdef DEBUG
 	printf("ALTITUDE CONTROLLER:\n");
 	rc_filter_print(D_Z);
@@ -240,6 +341,7 @@ int feedback_init(void)
 }
 
 
+<<<<<<< HEAD
 int feedback_march(void)
 {
 	int i;
@@ -250,16 +352,46 @@ int feedback_march(void)
 	static int count_y = 0;
 	static double prev_x_err = 0.01; 
 	static double prev_y_err = 0.01;
+=======
+<<<<<<< HEAD
+int feedback_march(void)
+{
+	int i;
+	double tmp_z, tmp_zi, tmp_xy, tmp_x, tmp_y, tmp_x_i, tmp_y_i, min, max, u_in; 
+	static double prev_z_err = -0.01;
+	static int count_z = 0;
+	static int count_x = 0;
+	static int count_y = 0;
+	static double prev_x_err = 0.01; 
+	static double prev_y_err = 0.01;
+=======
+
+
+int feedback_march(void)
+{
+	int i;
+	double tmp_z, tmp_xy, tmp_r, tmp_p, min, max, u_in;
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	double u[6], mot[8];
 	log_entry_t new_log;
 	static int last_en_Z_ctrl = 0;
 	static int last_en_XY_ctrl = 0;
 	double alt_hold_throttle;     //Altitude Hover Throttle
 	double yaw;
+<<<<<<< HEAD
 	static double last_X, last_Y;
 	static double vel_x, vel_y;
 	static double vel_x_set, vel_y_set;
 	static int sp;
+=======
+<<<<<<< HEAD
+	static double last_X, last_Y;
+	static double vel_x, vel_y;
+	static double vel_x_set, vel_y_set;
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 
 	// Disarm if rc_state is somehow paused without disarming the controller.
 	// This shouldn't happen if other threads are working properly.
@@ -298,6 +430,10 @@ int feedback_march(void)
 		if(last_en_Z_ctrl == 0){
 			setpoint.Z = state_estimate.alt_bmp; // set altitude setpoint to current altitude
 			rc_filter_reset(&D_Z);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 			rc_filter_reset(&D_Z_i);
 			tmp_z = 0.0001;
 			tmp_zi = 0.0001;
@@ -308,14 +444,31 @@ int feedback_march(void)
 
 		if (setpoint.Z > -0.075){
 			alt_hold_throttle = -0.40;
+<<<<<<< HEAD
 		}
 		else if (setpoint.Z < -0.075 && setpoint.Z > -0.15){
 			alt_hold_throttle = -0.40 + (2)*(setpoint.Z+0.075);
+=======
+=======
+			tmp_z = 0.01;
+			rc_filter_prefill_outputs(&D_Z, tmp_z);
+			last_en_Z_ctrl = 1;
+		}
+<<<<<<< HEAD
+
+		if (setpoint.Z > -0.1){
+			alt_hold_throttle = -0.45;
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 		}
 		else{
 			alt_hold_throttle = -0.55*(11.7/state_estimate.v_batt_lp);
 		}
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 		/*
 		if (((-setpoint.Z+state_estimate.alt_bmp) < 0.005 || (-setpoint.Z+state_estimate.alt_bmp) > -0.005) && (prev_z_err < 0.005 || prev_z_err > -0.005)){
 			count_z += 1;
@@ -341,6 +494,20 @@ int feedback_march(void)
 		fstate.u_z_i = tmp_zi;
 
 		prev_z_err = -setpoint.Z+state_estimate.alt_bmp;
+<<<<<<< HEAD
+=======
+=======
+        D_Z.gain = D_Z_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+=======
+		alt_hold_throttle = -0.56*(11.7/state_estimate.v_batt_lp);
+
+                D_Z.gain = D_Z_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+		tmp_z = rc_filter_march(&D_Z, -setpoint.Z+state_estimate.alt_bmp); //altitude is positive but +Z is down
+
+		u[VEC_Z] = (alt_hold_throttle - tmp_z)/(cos(state_estimate.roll)*cos(state_estimate.pitch));
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 		rc_saturate_double(&u[VEC_Z], MIN_THRUST_COMPONENT, MAX_THRUST_COMPONENT);
 		mix_add_input(u[VEC_Z], VEC_Z, mot);
 		last_en_Z_ctrl = 1;
@@ -354,6 +521,10 @@ int feedback_march(void)
 		u[VEC_Z] = tmp_z;
 		mix_add_input(u[VEC_Z], VEC_Z, mot);
 		alt_hold_throttle = u[VEC_Z];
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 	}
 
 	/***************************************************************************
@@ -381,7 +552,10 @@ int feedback_march(void)
 			last_X = xbeeMsg.x;
 			last_Y = xbeeMsg.y;
 			setpoint.yaw = 0.0;
+<<<<<<< HEAD
 			sp = setpoint.count;
+=======
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 			//rc_filter_prefill_inputs(&vel_x_lp, 0.0);
 			//rc_filter_prefill_outputs(&vel_x_lp, 0.0);
 			//rc_filter_prefill_inputs(&vel_y_lp, 0.0);
@@ -408,6 +582,7 @@ int feedback_march(void)
 		vel_y = vel_y_lp.newest_output;
 		*/
 
+<<<<<<< HEAD
 		if (setpoint.count != sp)
 		{
 			rc_filter_reset(&D_X_4_i);
@@ -419,6 +594,9 @@ int feedback_march(void)
 
 		setpoint.yaw = 1.15E-05*fstate.loop_index;
 
+=======
+		setpoint.yaw = 0.0;
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
 		//Calculate current yaw angle
 		yaw = state_estimate.yaw;
 
@@ -448,12 +626,85 @@ int feedback_march(void)
 		//rc_saturate_double(&setpoint.pitch, -0.3, 0.3);
 
 		last_en_XY_ctrl = 1;
+<<<<<<< HEAD
 		sp = setpoint.count;
 
 		last_X = xbeeMsg.x;
 		last_Y = xbeeMsg.y;
 		
+=======
+		last_X = xbeeMsg.x;
+		last_Y = xbeeMsg.y;
+		
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
 	}
+
+	/***************************************************************************
+	* Position Controller
+	**********************
+	***************************************************************************/
+	if(setpoint.en_XY_pos_ctrl){
+		if(last_en_XY_ctrl == 0){
+			setpoint.X = state_estimate.X; // set X position setpoint to current position
+			setpoint.Y = state_estimate.Y; // set Y position setpoint to current position
+			rc_filter_reset(&D_X_4);
+			rc_filter_reset(&D_Y_4);
+			tmp_xy = 0.01;
+			rc_filter_prefill_outputs(&D_X_4, tmp_xy);
+			rc_filter_prefill_outputs(&D_Y_4, tmp_xy);
+			last_en_XY_ctrl = 1;
+		}
+
+		D_X_4.gain = D_X_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+		D_Y_4.gain = D_Y_4_gain_orig*settings.v_nominal/state_estimate.v_batt_lp;
+
+		yaw = state_estimate.tb_imu[2];
+
+		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x);
+		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);
+
+		setpoint.roll = (-1/9.81)*(tmp_r*cos(yaw) - tmp_p*sin(yaw));
+		setpoint.pitch = (-1/9.81)*(-cos(yaw)*tmp_p - sin(yaw)*tmp_r);
+
+        rc_saturate_double(&setpoint.roll, -MAX_ROLL_SETPOINT, MAX_ROLL_SETPOINT);
+		rc_saturate_double(&setpoint.pitch, -MAX_PITCH_SETPOINT, MAX_PITCH_SETPOINT);
+
+		last_en_XY_ctrl = 1;
+>>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
+	}
+
+
+	/***************************************************************************
+	* Position Controller
+	**********************
+	***************************************************************************/
+	if(setpoint.en_XY_pos_ctrl){
+		if(last_en_XY_ctrl == 0){
+			setpoint.X = state_estimate.X; // set X position setpoint to current position
+			setpoint.Y = state_estimate.Y; // set Y position setpoint to current position
+			rc_filter_reset(&D_X_4);
+			rc_filter_reset(&D_Y_4);
+			tmp_xy = 0.00001;
+			rc_filter_prefill_outputs(&D_X_4, tmp_xy);
+			rc_filter_prefill_outputs(&D_Y_4, tmp_xy);
+			last_en_XY_ctrl = 1;
+		}
+
+		yaw = state_estimate.tb_imu[2];
+
+		tmp_p = rc_filter_march(&D_X_4, -setpoint.X+xbeeMsg.x); //X direction
+		tmp_r = rc_filter_march(&D_Y_4, -setpoint.Y+xbeeMsg.y);	//Y direction
+
+		setpoint.roll = (-1.0)*(tmp_r*cos(yaw)-tmp_p*sin(yaw));
+		setpoint.pitch = (-1.0)*(-tmp_p*cos(yaw)-tmp_r*sin(yaw));
+
+		last_en_XY_ctrl = 1;
+>>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
+	}
+
 
 	/***************************************************************************
 	* Roll Pitch Yaw controllers, only run if enabled
