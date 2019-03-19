@@ -79,10 +79,9 @@ static double f20_2300kv_2s_map[][2] = \
 // tiger motor F20 2300kv motor, 3S lipo, 4x8.0" 2-blade props
 // 20A esc med-low timing
 // thrust units in gram-force but doesn't really matter
-static const int tiger_3s_points = 20;
+static const int tiger_3s_points = 19;
 static double tiger_3s_map[][2] = \
 {{0.00,	0.0000}, \
- {0.1,	0.0000}, \
  {0.15,	0.0716}, \
  {0.20,	0.2110}, \
  {0.25,	0.3698}, \

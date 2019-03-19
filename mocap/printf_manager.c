@@ -71,10 +71,10 @@ static int __print_header()
 		printf("%s  kill  | thr |roll |pitch| yaw |", __next_colour());
 	}
 	if(settings.printf_setpoint){
-		printf("%s  sp_x | sp_y | sp_a | sp_r | sp_p | sp_y | SP |", __next_colour());
+		printf("%s  sp_a | sp_r| sp_p| sp_y|", __next_colour());
 	}
 	if(settings.printf_u){
-		printf("%s U0X | U1Y | U2Z | U3r | U4p | U5y ", __next_colour());
+		printf("%s U0X | U1Y | U2Z | U3r | U4p | U5y |", __next_colour());
 	}
 	if(settings.printf_motors){
 		printf("%s", __next_colour());
@@ -85,11 +85,6 @@ static int __print_header()
 	if(settings.printf_xbee){
 		printf("%s x_xb | y_xb | z_xb | qx_xb | qy_xb | qz_xb | qw_xb |", __next_colour());
 	}
-
-	if(settings.printf_PX4){
-		printf("%s m_x | m_y | w_x | w_y | w_z | Z | quality |", __next_colour());
-	}
-
 	printf(KNRM);
 	if(settings.printf_mode){
 		printf("   MODE ");
@@ -166,15 +161,12 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 							user_input.yaw_stick);
 		}
 		if(settings.printf_setpoint){
-			printf("%s%+5.2f|%+5.2f|%+5.2f|%+5.2f|%+5.2f|%+5.2f|%5d",\
+			printf("%s%+5.2f|%+5.2f|%+5.2f|%+5.2f|",\
 							__next_colour(),\
-							setpoint.X,\
-							setpoint.Y,\
 							setpoint.Z,\
 							setpoint.roll,\
 							setpoint.pitch,\
-							setpoint.yaw,\
-							setpoint.count);
+							setpoint.yaw);
 		}
 		if(settings.printf_u){
 			printf("%s%+5.2f|%+5.2f|%+5.2f|%+5.2f|%+5.2f|%+5.2f|",\
@@ -203,18 +195,6 @@ static void* __printf_manager_func(__attribute__ ((unused)) void* ptr)
 				printf("%+5.2f|", fstate.m[i]);
 			}
 		}
-		if(settings.printf_PX4){
-			printf("%s%+5.2d |%+5.2d |%+5.2d | %+5.2d | %+5.2d | %+5.2d | %5d |",\
-							__next_colour(),\
-							state_estimate.PX4_pix_x_int,\
-							state_estimate.PX4_pix_y_int,\
-							state_estimate.PX4_gyro_x_int,\
-							state_estimate.PX4_gyro_y_int,\
-							state_estimate.PX4_gyro_z_int,\
-							state_estimate.PX4_ground_distance_int,\
-							state_estimate.PX4_quality);
-		}	
-
 		printf(KNRM);
 		if(settings.printf_mode){
 			print_flight_mode(user_input.flight_mode);
@@ -278,12 +258,6 @@ int print_flight_mode(flight_mode_t mode){
 		return 0;
 	case ALT_HOLD_6DOF:
 		printf("%sALT_HOLD_6DOF  %s",KBLU,KNRM);
-		return 0;
-	case POSITION_CONTROL_4DOF:
-		printf("%sPOSITION_CONTROL_4DOF  %s",KBLU,KNRM);
-		return 0;
-	case AUTO_4DOF:
-		printf("%sAUTO_4DOF  %s",KCYN,KNRM);
 		return 0;
 	default:
 		fprintf(stderr,"ERROR in print_flight_mode, unknown flight mode\n");

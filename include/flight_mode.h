@@ -65,7 +65,11 @@ typedef enum flight_mode_t{
 	/**
 	 * PG: TODO: What do you intend for this mode?
 	 */
-	POSITION_CONTROL_6DOF
+	POSITION_CONTROL_6DOF,
+	/**
+	 * Auto Flight mode
+	 */
+	AUTO_4DOF,
 
 } flight_mode_t;
 

@@ -70,6 +70,7 @@ typedef struct log_entry_t{
 	double	u_X;
 	double	u_Y;
 	double	u_Z;
+	double  u_z_i;
 	///@}
 
 	/** @name motor signals */

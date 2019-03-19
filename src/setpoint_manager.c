@@ -5,9 +5,12 @@
 **/
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 #include <string.h> // for memset
 
+#include <robotcontrol.h>
 #include <rc/start_stop.h>
+#include <rc/time.h>
 
 #include <setpoint_manager.h>
 #include <settings.h>
@@ -16,11 +19,20 @@
 #include <state_estimator.h>
 #include <rc_pilot_defs.h>
 #include <flight_mode.h>
+#include <xbee_packet_t.h>
 
-#define XYZ_MAX_ERROR	0.5 ///< meters.
+#define XYZ_MAX_ERROR	0.1 ///< meters.
 
 setpoint_t setpoint; // extern variable in setpoint_manager.h
 
+static uint64_t start_index;
+
+double X0,Y0,Z0;
+int alt_hold;
+int k = 0;
+
+double pt[6][3];
+double limit = 0.1;
 
 void __update_yaw(void)
 {
@@ -47,41 +59,36 @@ void __update_Z(void)
 		setpoint.Z_dot = 0.0;
 		return;
 	}
-	setpoint.Z_dot = -user_input.thr_stick * settings.max_Z_velocity;
+	setpoint.Z_dot = -user_input.thr_stick*settings.max_Z_velocity;
+	setpoint.Z += setpoint.Z_dot*DT;
+	return;
+}
+
+void __update_Z_alt_hold(void)
+{
+	setpoint.Z_dot = -user_input.thr_stick*settings.max_Z_velocity;
+	if((-user_input.thr_stick < 0.01) && (-user_input.thr_stick > -0.01)){
+		setpoint.Z_dot = 0.0;
+	}
 	setpoint.Z += setpoint.Z_dot*DT;
 	return;
 }
 
 void __update_XY_pos(void)
 {
-	// make sure setpoint doesn't go too far from state in case touching something
-	if(setpoint.X > (state_estimate.X + XYZ_MAX_ERROR)){
-		setpoint.X = state_estimate.X + XYZ_MAX_ERROR;
+	setpoint.X_dot = -user_input.pitch_stick*settings.max_XY_velocity;
+	setpoint.Y_dot =  user_input.roll_stick*settings.max_XY_velocity;
+
+	if((-user_input.pitch_stick<0.01) && (-user_input.pitch_stick > -0.01)){
 		setpoint.X_dot = 0.0;
 	}
-	else if(setpoint.X < (state_estimate.X - XYZ_MAX_ERROR)){
-		setpoint.X = state_estimate.X - XYZ_MAX_ERROR;
-		setpoint.X_dot = 0.0;
-		return;
-	}
-	else{
-		setpoint.X += setpoint.X_dot*DT;
+
+	if((user_input.roll_stick < 0.01) && (user_input.roll_stick > -0.01)){
+		setpoint.Y_dot = 0.0;
 	}
 
-	if(setpoint.Y > (state_estimate.Y + XYZ_MAX_ERROR)){
-		setpoint.Y = state_estimate.Y + XYZ_MAX_ERROR;
-		setpoint.Y_dot = 0.0;
-		return;
-	}
-	else if(setpoint.Y < (state_estimate.Y - XYZ_MAX_ERROR)){
-		setpoint.Y = state_estimate.Y - XYZ_MAX_ERROR;
-		setpoint.Y_dot = 0.0;
-		return;
-	}
-	else{
-		setpoint.Y += setpoint.Y_dot*DT;
-	}
-
+	setpoint.X += setpoint.X_dot*DT;
+	setpoint.Y += setpoint.Y_dot*DT;
 	return;
 }
 
@@ -94,13 +101,98 @@ int setpoint_manager_init(void)
 	}
 	memset(&setpoint,0,sizeof(setpoint_t));
 	setpoint.initialized = 1;
+
 	return 0;
 }
 
+void __update_AutoZ(void) {
+
+		if (setpoint.count == 0) {
+			setpoint.Z_dot = 0.13*settings.max_Z_velocity;
+			alt_hold = 0;
+		}
+		else if (setpoint.count == 5){
+			setpoint.Z_dot = -0.13*settings.max_Z_velocity;
+			alt_hold = 0;
+		}
+		else {
+			setpoint.Z_dot = 0.0;
+			alt_hold = 1;
+		}
+		setpoint.Z = setpoint.Z - setpoint.Z_dot*DT;
+		rc_saturate_double(&setpoint.Z,-0.65,1.0);
+
+}
+
+void __update_AutoY(void) {
+		
+	if (alt_hold == 1){
+		if (setpoint.count == 1 || setpoint.count == 3){								//setpoint.count == 1 || setpoint.count == 3
+			setpoint.Y_dot = 0.6*settings.max_XY_velocity;
+		} 
+		else if (setpoint.count == 2 || setpoint.count == 4){							//setpoint.count == 2 || setpoint.count == 4
+			setpoint.Y_dot = -0.6*settings.max_XY_velocity;
+		}
+		else{
+			setpoint.Y_dot = 0.0;
+		}
+		setpoint.Y = setpoint.Y + setpoint.Y_dot*DT;
+		rc_saturate_double(&setpoint.Y,Y0,Y0+0.8);
+	}
+
+}
+
+
+void __update_AutoX(void) {
+	if (alt_hold == 1){	
+
+		if (setpoint.count == 1){								//setpoint.count == 1
+			setpoint.X_dot = 0.6*settings.max_XY_velocity;
+		} 
+		else if (setpoint.count == 3){							//setpoint.count == 3
+			setpoint.X_dot = -0.6*settings.max_XY_velocity;
+		}
+		else{
+			setpoint.X_dot = 0.0;
+		}
+		setpoint.X = setpoint.X + setpoint.X_dot*DT;
+		rc_saturate_double(&setpoint.X,X0,X0+0.8);
+	}
+}
+
+void __update_Pt(void) {
+	if ((fstate.loop_index) <= 6000 && (fstate.loop_index) > 1500){
+		setpoint.count = 0;
+	}
+	else if ((fstate.loop_index) > 6000 && ((fstate.loop_index) <= 10500)){
+		setpoint.count = 1;
+	}
+	else if ((fstate.loop_index) > 10500 && ((fstate.loop_index) <= 15000)){
+		setpoint.count = 2;
+	}
+	else if ((fstate.loop_index) > 15000 && ((fstate.loop_index) <= 19500)){
+		setpoint.count = 3;
+	}
+	else if ((fstate.loop_index) > 19500 && ((fstate.loop_index) <= 24000)){
+		setpoint.count = 4;
+	}
+	else if ((fstate.loop_index) > 24000 && ((fstate.loop_index) <= 28500)){
+		setpoint.count = 5;
+	}
+	else{
+		setpoint.count = -1;
+		setpoint.X = X0;
+		setpoint.Y = Y0;
+		setpoint.Z = Z0;
+	}
+}
 
 
 int setpoint_manager_update(void)
 {
+	double tmp_Z_throttle;
+	static int autostart = 1;
+
 	if(setpoint.initialized==0){
 		fprintf(stderr, "ERROR in setpoint_manager_update, not initialized yet\n");
 		return -1;
@@ -183,15 +275,18 @@ int setpoint_manager_update(void)
 		break;
 
 	case ALT_HOLD_4DOF:
-		setpoint.en_6dof	= 0;
-		setpoint.en_rpy_ctrl	= 1;
-		setpoint.en_Z_ctrl	= 1;
-		setpoint.en_XY_vel_ctrl	= 0;
-		setpoint.en_XY_pos_ctrl	= 0;
+		setpoint.en_6dof		= 0;
+		setpoint.en_rpy_ctrl		= 1;
+		setpoint.en_Z_ctrl		= 1;
+		setpoint.en_XY_vel_ctrl		= 0;
+		setpoint.en_XY_pos_ctrl		= 0;
+		//tmp_Z_throttle 		= setpoint.Z_throttle;
+		//setpoint.Z_throttle		= -user_input.thr_stick;
 
-		setpoint.roll		= user_input.roll_stick;
-		setpoint.pitch		= user_input.pitch_stick;
-		__update_Z();
+		setpoint.roll			= user_input.roll_stick;
+		setpoint.pitch			= user_input.pitch_stick;
+
+		__update_Z_alt_hold();
 		__update_yaw();
 		break;
 
@@ -242,11 +337,44 @@ int setpoint_manager_update(void)
 		setpoint.en_Z_ctrl	= 1;
 		setpoint.en_XY_vel_ctrl	= 0;
 		setpoint.en_XY_pos_ctrl	= 1;
+		//setpoint.yaw = 0.0;
 
-		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
-		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
+		//setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
+		//setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
+		//setpoint.X = 0.5;
+		//setpoint.Y = 0.5;
 		__update_XY_pos();
-		__update_Z();
+		__update_Z_alt_hold();
+		__update_yaw();
+		break;
+
+	case AUTO_4DOF:
+		if (autostart == 1){
+
+			start_index = fstate.loop_index;
+			X0 = xbeeMsg.x;
+			Y0 = xbeeMsg.y;
+			Z0 = state_estimate.alt_bmp;
+
+			setpoint.X = xbeeMsg.x;
+			setpoint.Y = xbeeMsg.y;
+			setpoint.Z = state_estimate.alt_bmp;
+
+			setpoint.count = 0;
+			autostart = 0;
+			alt_hold = 0;
+
+		}
+		setpoint.en_6dof	= 0;
+		setpoint.en_rpy_ctrl = 1;
+		setpoint.en_Z_ctrl	= 1;
+		setpoint.en_XY_vel_ctrl	= 0;
+		setpoint.en_XY_pos_ctrl	= 1;
+
+		__update_Pt();
+		__update_AutoZ();
+		__update_AutoX();
+		__update_AutoY();
 		__update_yaw();
 		break;
 
@@ -256,9 +384,6 @@ int setpoint_manager_update(void)
 		setpoint.en_Z_ctrl	= 1;
 		setpoint.en_XY_vel_ctrl	= 0;
 		setpoint.en_XY_pos_ctrl	= 1;
-
-		setpoint.X_dot = -user_input.pitch_stick * settings.max_XY_velocity;
-		setpoint.Y_dot =  user_input.roll_stick  * settings.max_XY_velocity;
 		__update_XY_pos();
 		__update_Z();
 		__update_yaw();

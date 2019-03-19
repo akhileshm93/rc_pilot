@@ -203,8 +203,13 @@ void new_dsm_data_callback()
 		else if(new_mode<-0.5) user_input.flight_mode = settings.flight_mode_1;
 		else user_input.flight_mode = settings.flight_mode_2;
 		break;
+	case 4:
+		if(new_mode>0.5) user_input.flight_mode = settings.flight_mode_3;
+		else if(new_mode<-0.5) user_input.flight_mode = settings.flight_mode_4;
+		else user_input.flight_mode = settings.flight_mode_2;
+		break;
 	default:
-		fprintf(stderr,"ERROR, in input_manager, num_dsm_modes must be 1,2 or 3\n");
+		fprintf(stderr,"ERROR, in input_manager, num_dsm_modes must be 1,2 3 or 4\n");
 		fprintf(stderr,"selecting flight mode 1\n");
 		user_input.flight_mode = settings.flight_mode_1;
 		break;

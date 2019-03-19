@@ -20,6 +20,7 @@
 
 #include <rc_pilot_defs.h>
 
+
 /**
  * Setpoint for the feedback controllers. This is written by setpoint_manager
  * and primarily read in by fly_controller. May also be read by printf_manager
@@ -73,6 +74,7 @@ typedef struct setpoint_t{
 	int en_XY_pos_ctrl;
 	double X;
 	double Y;
+	int count;
 } setpoint_t;
 
 extern setpoint_t setpoint;

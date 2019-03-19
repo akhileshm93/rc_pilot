@@ -200,9 +200,6 @@ static int __parse_thrust_map(void)
 	else if(strcmp(tmp_str, "MN1806_1400KV_4S")==0){
 		settings.thrust_map = MN1806_1400KV_4S;
 	}
-	else if(strcmp(tmp_str, "TIGER_3S")==0){
-		settings.thrust_map = TIGER_3S;
-	}
 	else if(strcmp(tmp_str, "F20_2300KV_2S")==0){
 		settings.thrust_map = F20_2300KV_2S;
 	}
@@ -264,9 +261,6 @@ static int __parse_flight_mode(json_object* jobj_str, flight_mode_t* mode)
 	else if(strcmp(tmp_str, "POSITION_CONTROL_6DOF")==0){
 		*mode = POSITION_CONTROL_6DOF;
 	}
-	else if(strcmp(tmp_str, "AUTO_4DOF")==0){
-		*mode = AUTO_4DOF;
-	}
 	else{
 		fprintf(stderr,"ERROR: invalid flight mode\n");
 		return -1;
@@ -318,8 +312,8 @@ static int __parse_controller(json_object* jobj_ctl, rc_filter_t* filter)
 	char* tmp_str = NULL;
 	double tmp_flt, tmp_kp, tmp_ki, tmp_kd;
 	int i, num_len, den_len;
-	rc_vector_t num_vec = RC_VECTOR_INITIALIZER;
-	rc_vector_t den_vec = RC_VECTOR_INITIALIZER;
+	rc_vector_t num_vec = rc_vector_empty(); //RC_VECTOR_INITIALIZER;
+	rc_vector_t den_vec = rc_vector_empty() ; //RC_VECTOR_INITIALIZER;
 
 	// destroy old memory in case the order changes
 	rc_filter_free(filter);
@@ -563,7 +557,7 @@ int settings_load_from_file(char* path)
 
 
 	// FLIGHT MODES
-	PARSE_INT_MIN_MAX(num_dsm_modes,1,4)
+	PARSE_INT_MIN_MAX(num_dsm_modes,1,3)
 	if(json_object_object_get_ex(jobj, "flight_mode_1", &tmp)==0){
 		fprintf(stderr,"ERROR: can't find flight_mode_1 in settings file\n");
 		return -1;
@@ -587,14 +581,6 @@ int settings_load_from_file(char* path)
 	if(__parse_flight_mode(tmp, &settings.flight_mode_3)) return -1;
 	#ifdef DEBUG
 	fprintf(stderr,"flight_mode_3: %d\n",settings.flight_mode_3);
-	#endif
-	if(json_object_object_get_ex(jobj, "flight_mode_4", &tmp)==0){
-		fprintf(stderr,"ERROR: can't find flight_mode_4 in settings file\n");
-		return -1;
-	}
-	if(__parse_flight_mode(tmp, &settings.flight_mode_4)) return -1;
-	#ifdef DEBUG
-	fprintf(stderr,"flight_mode_3: %d\n",settings.flight_mode_4);
 	#endif
 
 	// DSM RADIO CONFIG
@@ -625,7 +611,6 @@ int settings_load_from_file(char* path)
 	PARSE_BOOL(printf_motors)
 	PARSE_BOOL(printf_mode)
 	PARSE_BOOL(printf_xbee)
-	PARSE_BOOL(printf_PX4)
 
 	// LOGGING
 	PARSE_BOOL(enable_logging)
@@ -634,8 +619,6 @@ int settings_load_from_file(char* path)
 	PARSE_BOOL(log_setpoint)
 	PARSE_BOOL(log_control_u)
 	PARSE_BOOL(log_motor_signals)
-	PARSE_BOOL(log_xbee)
-	PARSE_BOOL(log_px4)
 
 	// MAVLINK
 	PARSE_STRING(dest_ip)
@@ -647,11 +630,9 @@ int settings_load_from_file(char* path)
 	PARSE_CONTROLLER(pitch_controller)
 	PARSE_CONTROLLER(yaw_controller)
 	PARSE_CONTROLLER(altitude_controller)
-	PARSE_CONTROLLER(altitude_i_controller)
 	PARSE_CONTROLLER(horiz_vel_ctrl_4dof)
 	PARSE_CONTROLLER(horiz_vel_ctrl_6dof)
 	PARSE_CONTROLLER(horiz_pos_ctrl_4dof)
-	PARSE_CONTROLLER(horiz_pos_i_ctrl_4dof)
 	PARSE_CONTROLLER(horiz_pos_ctrl_6dof)
 	PARSE_DOUBLE_MIN_MAX(max_XY_velocity, .1, 10)
 	PARSE_DOUBLE_MIN_MAX(max_Z_velocity, .1, 10)

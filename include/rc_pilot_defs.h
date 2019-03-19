@@ -45,8 +45,8 @@ typedef enum arm_state_t{
 
 // user control parameters
 #define MAX_YAW_RATE		2.5	// rad/s
-#define MAX_ROLL_SETPOINT	0.2	// rad
-#define MAX_PITCH_SETPOINT	0.2	// rad
+#define MAX_ROLL_SETPOINT	0.3	// rad
+#define MAX_PITCH_SETPOINT	0.3	// rad
 #define MAX_CLIMB_RATE		1.0	// m/s
 #define YAW_DEADZONE		0.02
 #define THROTTLE_DEADZONE	0.02

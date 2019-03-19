@@ -32,6 +32,7 @@ typedef struct feedback_state_t{
 
 	double u[6];		///< siso controller outputs
 	double m[8];		///< signals sent to motors after mapping
+	double u_z_i;
 }feedback_state_t;
 
 extern feedback_state_t fstate;
