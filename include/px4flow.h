@@ -57,16 +57,6 @@ typedef struct I2C_data
 int PX4Flow_Initialize(I2C_data *px4flow);
 int PX4Flow_ReadFrame(I2C_data *px4flow, px4flow_frame *frame);
 int PX4Flow_ReadIntFrame(I2C_data *px4flow, px4flow_integral_frame *iframe);
-<<<<<<< HEAD
 int PX4Flow_ReadAllFrames(I2C_data *px4flow, px4flow_frame *frame, px4flow_integral_frame *iframe);
-=======
-<<<<<<< HEAD
-int PX4Flow_ReadAllFrames(I2C_data *px4flow, px4flow_frame *frame, px4flow_integral_frame *iframe);
-=======
-<<<<<<< HEAD
-int PX4Flow_ReadAllFrames(I2C_data *px4flow, px4flow_frame *frame, px4flow_integral_frame *iframe);
-=======
-int PX4Flow_ReadAllFrames(I2C_data *px4flow, px4flow_frame *frame, px4flow_integral_frame *iframe);
->>>>>>> 10ac3fbd078868976fcbbd45d462eac1f3cc19c3
->>>>>>> 5f08dc3a05cac60167486d13896ca274dfdd273a
->>>>>>> ad3cf265d1ec65fa8bc0428646a415059218c915
+
+
